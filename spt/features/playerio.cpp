@@ -623,6 +623,47 @@ CON_COMMAND(_y_spt_getvel, "Gets the last velocity of the player.")
 	Warning("Velocity (xy): %f\n", vel.Length2D());
 }
 
+CON_COMMAND(spt_setvel, "Sets the velocity of the player.")
+{
+	int argc = args.ArgC();
+	if (argc != 2 && argc != 4)
+	{
+		Msg("Usage: spt_setvel <vel> | <x> <y> <z>\n");
+		return;
+	}
+
+	if (!interfaces::engine_server->PEntityOfEntIndex(0))
+	{
+		Msg("Server not loaded.\n");
+		return;
+	}
+
+	Vector* playerVelPtr = spt_playerio.m_vecAbsVelocity.GetPtr();
+	if (!playerVelPtr)
+	{
+		Msg("m_vecAbsVelocity not available.\n");
+		return;
+	}
+
+	Vector newVel;
+	if (argc == 4)
+	{
+		newVel.x = atof(args.Arg(1));
+		newVel.y = atof(args.Arg(2));
+		newVel.z = atof(args.Arg(3));
+	}
+	else if (argc == 2)
+	{
+		float vel = atof(args.Arg(1));
+		QAngle angles = utils::GetPlayerEyeAngles();
+		AngleVectors(angles, &newVel);
+		newVel.NormalizeInPlace();
+		newVel *= vel;
+	}
+
+	*playerVelPtr = newVel;
+}
+
 #ifdef SPT_PORTAL_UTILS
 CON_COMMAND(y_spt_print_portals, "Prints info for all portals")
 {
@@ -918,6 +959,7 @@ void PlayerIOFeature::LoadFeature()
 	if (m_vecAbsVelocity.Found())
 	{
 		InitCommand(_y_spt_getvel);
+		InitCommand(spt_setvel);
 #ifdef SPT_HUD_ENABLED
 		if (TickSignal.Works)
 		{
