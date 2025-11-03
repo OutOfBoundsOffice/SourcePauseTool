@@ -275,7 +275,7 @@ void DrawLine::ImGuiCallback()
 	* There may be a better way to layout all of these elements than the group crap I threw
 	* together... that'll be for another day :).
 	*/
-	if (drawChildWnd && ImGui::BeginChild("##lines", {0, 0}, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
+	if (drawChildWnd && ImGui::BeginChild("##lines", {0, 0}, ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY))
 	{
 		ImGuiListClipper clipper;
 		clipper.Begin(lines.size());

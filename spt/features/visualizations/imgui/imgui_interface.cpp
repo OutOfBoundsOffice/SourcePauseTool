@@ -500,18 +500,18 @@ private:
 
 	static void ReloadFontSize()
 	{
+		// old code to reload font from scratch every time, can prolly be improved
 		int tmpFontSize = fontSize;
 		fontSize = clamp(tmpFontSize, minFontSize, maxFontSize);
 		auto& io = ImGui::GetIO();
 		io.Fonts->Clear();
 		ImFontConfig fontCfg{};
 		strncpy(fontCfg.Name, "JetBrainsMono-Bold.ttf", sizeof fontCfg.Name);
-		io.Fonts->AddFontFromMemoryCompressedTTF(JetBrainsMono_Bold_compressed_data,
-		                                         JetBrainsMono_Bold_compressed_data_size,
-		                                         fontSize,
-		                                         &fontCfg,
-		                                         io.Fonts->GetGlyphRangesDefault());
-		io.Fonts->Build();
+		ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(JetBrainsMono_Bold_compressed_data,
+		                                                        JetBrainsMono_Bold_compressed_data_size,
+		                                                        fontSize,
+		                                                        &fontCfg);
+		ImGui::PushFont(font, (float)fontSize);
 		recreateDeviceObjects = true;
 		reloadFontSize = false;
 	}
