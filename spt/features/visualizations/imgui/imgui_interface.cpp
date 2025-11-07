@@ -231,7 +231,7 @@ private:
 			ImGui::Text("#define __clang_version__ %s", __clang_version__);
 #endif
 			ImGui::TextLinkOpenURL("Github##spt", "https://github.com/OutOfBoundsOffice/SourcePauseTool");
-			ImGui::TextDisabled("%s", "Copyright (c) 2014-2021 Ivan Molodetskikh");
+			ImGui::TextDisabled("%s", "Copyright (c) 2014-2025 SPT contributors");
 
 			ImGui::Separator();
 			ImGui::Text("SPTlib");

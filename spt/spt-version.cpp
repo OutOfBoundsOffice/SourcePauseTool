@@ -10,4 +10,4 @@
 #define SPT_VERSION_MACRO __DATE__ " " __TIME__
 
 const char* SPT_VERSION = SPT_VERSION_MACRO;
-const char* SPT_DESCRIPTION = "SourcePauseTool v" SPT_VERSION_MACRO ", Ivan \"YaLTeR\" Molodetskikh";
+const char* SPT_DESCRIPTION = "SourcePauseTool v" SPT_VERSION_MACRO;
