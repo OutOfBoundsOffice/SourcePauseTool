@@ -5,6 +5,7 @@
 #include "signals.hpp"
 #include "visualizations\imgui\imgui_interface.hpp"
 #include "tas.hpp"
+#include "game_detection.hpp"
 
 ConVar y_spt_pause("y_spt_pause", "0", FCVAR_ARCHIVE);
 
@@ -96,9 +97,11 @@ void PauseFeature::PreHook()
 		int ptnNumber = GetPatternIndex((void**)&spt_generic.ORIG_SV_ActivateServer);
 		switch (ptnNumber)
 		{
-		case 3: // 2707
-			// TODO: check if HL2 2707 has offset 223, because HLS 2707 (and other OE versions) got 222
-			pGameServer = (*(void**)((int)spt_generic.ORIG_SV_ActivateServer + 222));
+		case 3:
+			if (utils::GetBuildNumber() <= 2707)
+				pGameServer = (*(void**)((int)spt_generic.ORIG_SV_ActivateServer + 223));
+			else
+				pGameServer = (*(void**)((int)spt_generic.ORIG_SV_ActivateServer + 222));
 			break;
 		}
 
