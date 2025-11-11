@@ -5,6 +5,7 @@
 #include "imgui_interface.hpp"
 #include "thirdparty/imgui/imgui_internal.h"
 #include "spt/utils/portal_utils.hpp"
+#include "thirdparty/fonts/codicon/codepoints/IconsCodicons.h"
 
 // for float/integer text inputs have a constant width
 #define SPT_IMGUI_NUMBER_INPUT_N_CHARS 25
@@ -315,7 +316,7 @@ void SptImGui::HelpMarker(const char* fmt, ...)
 {
 	va_list va;
 	va_start(va, fmt);
-	ImGui::TextDisabled("(?)");
+	ImGui::TextDisabled(ICON_CI_QUESTION);
 	if (ImGui::BeginItemTooltip())
 	{
 		ImGui::PushTextWrapPos(-1.f);

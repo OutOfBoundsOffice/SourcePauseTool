@@ -1563,7 +1563,6 @@ del "$(OutDir)spt-version.obj"</Command>
     <ClInclude Include="spt\features\visualizations\fcps\fcps_event_queue.hpp" />
     <ClInclude Include="spt\features\visualizations\imgui\imgui_interface.hpp" />
     <ClInclude Include="spt\features\visualizations\imgui\imgui_styles.hpp" />
-    <ClInclude Include="spt\features\visualizations\imgui\jetbrains_mono_bold.hpp" />
     <ClInclude Include="spt\features\visualizations\mesh_test_data.hpp" />
     <ClInclude Include="spt\features\visualizations\player_trace\import_export\tr_binary.hpp" />
     <ClInclude Include="spt\features\visualizations\player_trace\tr_config.hpp" />
@@ -1673,6 +1672,9 @@ del "$(OutDir)spt-version.obj"</Command>
     <ClInclude Include="thirdparty\flatbuffers\vector.h" />
     <ClInclude Include="thirdparty\flatbuffers\vector_downward.h" />
     <ClInclude Include="thirdparty\flatbuffers\verifier.h" />
+    <ClInclude Include="thirdparty\fonts\codicon\codepoints\IconsCodicons.h" />
+    <ClInclude Include="thirdparty\fonts\codicon\codicon.hpp" />
+    <ClInclude Include="thirdparty\fonts\jetbrains_mono_bold\jetbrains_mono_bold.hpp" />
     <ClInclude Include="thirdparty\imgui\imconfig.h" />
     <ClInclude Include="thirdparty\imgui\imgui.h" />
     <ClInclude Include="thirdparty\imgui\imgui_impl_dx9.h" />
@@ -1715,6 +1717,7 @@ del "$(OutDir)spt-version.obj"</Command>
     <Text Include="spt\features\template.cpp.txt" />
     <Text Include="spt\flatbuffers_schemas\gen\README.txt" />
     <Text Include="thirdparty\example.txt" />
+    <Text Include="thirdparty\fonts\README.txt" />
     <Text Include="thirdparty\xz\readme.txt" />
   </ItemGroup>
   <ItemGroup>
