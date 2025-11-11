@@ -14,6 +14,9 @@
 #include "thirdparty/imgui/imgui_internal.h"
 #include "thirdparty/imgui/imgui_impl_dx9.h"
 #include "thirdparty/imgui/imgui_impl_win32.h"
+#include "thirdparty/fonts/jetbrains_mono_bold/jetbrains_mono_bold.hpp"
+#include "thirdparty/fonts/codicon/codicon.hpp"
+#include "thirdparty/fonts/codicon/codepoints/IconsCodicons.h"
 #include "thirdparty/flatbuffers/base.h"
 
 #include "thirdparty/x86.h"
@@ -24,7 +27,6 @@
 #include "d3d9helper.h"
 
 #include "imgui_interface.hpp"
-#include "jetbrains_mono_bold.hpp"
 #include "imgui_styles.hpp"
 
 #define VPROF_BUDGETGROUP_IMGUI _T("SPT_ImGui")
@@ -346,6 +348,45 @@ private:
 		                     "I only made the colors work with the default theme.");
 		ImGui::EndDisabled();
 		ImGui::Checkbox("Show ImGui example window", &showExampleWindow);
+
+		if (ImGui::TreeNode("Debug icon font"))
+		{
+			constexpr int nCols = 4;
+
+			ImGuiTableFlags tableFlags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg
+			                             | ImGuiTableFlags_Borders
+			                             | ImGuiTableFlags_SizingFixedFit;
+
+			ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeight() * 20);
+			if (ImGui::BeginTable("icon chars", nCols, tableFlags, outer_size))
+			{
+				ImGuiListClipper clipper;
+				clipper.Begin((int)std::ceil((ICON_MAX_CI - ICON_MIN_CI) / (float)nCols));
+				while (clipper.Step())
+				{
+					for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+					{
+						ImGui::TableNextRow();
+						for (int c = 0; c < nCols; c++)
+						{
+							ImGui::TableSetColumnIndex(c);
+							int codePoint = row * nCols + c + ICON_MIN_CI;
+							if (codePoint > ICON_MAX_CI)
+								continue;
+							char utf8Buf[16];
+							memset(utf8Buf, 0, sizeof(utf8Buf));
+							char* cpBuf = utf8Buf + sprintf(utf8Buf, "0x%X: ", codePoint);
+							cpBuf[0] = (char)(0xe0 | codePoint >> 12);
+							cpBuf[1] = (char)(0x80 | ((codePoint >> 6) & 0x3F));
+							cpBuf[2] = (char)(0x80 | (codePoint & 0x3F));
+							ImGui::TextUnformatted(utf8Buf);
+						}
+					}
+				}
+				ImGui::EndTable();
+				ImGui::TreePop();
+			}
+		}
 	}
 
 	static void SettingsTabCallback()
@@ -505,13 +546,34 @@ private:
 		fontSize = clamp(tmpFontSize, minFontSize, maxFontSize);
 		auto& io = ImGui::GetIO();
 		io.Fonts->Clear();
-		ImFontConfig fontCfg{};
-		strncpy(fontCfg.Name, "JetBrainsMono-Bold.ttf", sizeof fontCfg.Name);
-		ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(JetBrainsMono_Bold_compressed_data,
-		                                                        JetBrainsMono_Bold_compressed_data_size,
-		                                                        fontSize,
-		                                                        &fontCfg);
-		ImGui::PushFont(font, (float)fontSize);
+
+		ImFontLoader loader{};
+
+		{
+			ImFontConfig fontCfg{};
+			strncpy(fontCfg.Name, "JetBrainsMono-Bold.ttf", sizeof fontCfg.Name);
+			static ImWchar excludeRanges[] = {ICON_MIN_CI, ICON_MAX_CI, 0};
+			fontCfg.GlyphExcludeRanges = excludeRanges;
+			ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(JetBrainsMono_Bold_compressed_data,
+			                                                        JetBrainsMono_Bold_compressed_data_size,
+			                                                        fontSize,
+			                                                        &fontCfg);
+			ImGui::PushFont(font, (float)fontSize);
+		}
+
+		{
+			ImFontConfig fontCfg{};
+			fontCfg.MergeMode = true;
+			static ImWchar excludeRanges[] = {1, 127, 0};
+			fontCfg.GlyphExcludeRanges = excludeRanges;
+			strncpy(fontCfg.Name, "codicon.tff", sizeof fontCfg.Name);
+			ImFont* font = io.Fonts->AddFontFromMemoryCompressedTTF(codicon_font_compressed_data,
+			                                                        codicon_font_compressed_size,
+			                                                        fontSize,
+			                                                        &fontCfg);
+			ImGui::PushFont(font, (float)fontSize);
+		}
+
 		recreateDeviceObjects = true;
 		reloadFontSize = false;
 	}
