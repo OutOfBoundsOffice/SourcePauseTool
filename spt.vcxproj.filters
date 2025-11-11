@@ -873,9 +873,6 @@
     <ClInclude Include="spt\utils\spt_vprof.hpp">
       <Filter>spt\utils</Filter>
     </ClInclude>
-    <ClInclude Include="spt\features\visualizations\imgui\jetbrains_mono_bold.hpp">
-      <Filter>spt\features\visualizations\imgui</Filter>
-    </ClInclude>
     <ClInclude Include="spt\features\visualizations\imgui\imgui_styles.hpp">
       <Filter>spt\features\visualizations\imgui</Filter>
     </ClInclude>
@@ -1101,6 +1098,15 @@
     <ClInclude Include="spt\utils\custom_interfaces\engine_server.hpp">
       <Filter>spt\utils\custom_interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="thirdparty\fonts\codicon\codicon.hpp">
+      <Filter>thirdparty\fonts\codicon</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\fonts\codicon\codepoints\IconsCodicons.h">
+      <Filter>thirdparty\fonts\codicon\codepoints</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\fonts\jetbrains_mono_bold\jetbrains_mono_bold.hpp">
+      <Filter>thirdparty\fonts\jetbrains_mono_bold</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK includes &amp; libs">
@@ -1204,6 +1210,18 @@
     </Filter>
     <Filter Include="spt\flatbuffers_schemas\gen">
       <UniqueIdentifier>{3bb77c97-164a-46cd-b566-60d3038a6da7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\fonts\codicon\codepoints">
+      <UniqueIdentifier>{625ef0ac-0201-4398-8ca5-4778ddd7b629}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\fonts">
+      <UniqueIdentifier>{743094f2-1c96-4abb-9085-e95832371487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\fonts\codicon">
+      <UniqueIdentifier>{a6acb779-3b38-46d8-9eef-f80bf9a3a389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\fonts\jetbrains_mono_bold">
+      <UniqueIdentifier>{09f6c924-5322-48d6-87af-5553ca6db293}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
