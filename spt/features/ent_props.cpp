@@ -571,7 +571,7 @@ void EntProps::ImGuiEntInfoCvarCallback(ConVar& var)
 		// new entity index, we're at the end, or parse error - cleanup ID, indent, etc.
 		if ((readEntityIndex || atEnd) && nEnts > 0)
 		{
-			if (ImGui::SmallButton("+"))
+			if (SptImGui::SmallIconButton(ICON_CI_ADD))
 			{
 				newVal.append(",.*");
 				updateCvar = true;
@@ -602,12 +602,13 @@ void EntProps::ImGuiEntInfoCvarCallback(ConVar& var)
 			if (ent)
 				ImGui::Text("(class name: %s)", ent->GetClientClass()->GetName());
 			else
-				ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW, "(invalid entity)");
+				ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW,
+				                   ICON_CI_WARNING " invalid entity " ICON_CI_WARNING);
 
 			ImGui::PushID(nEnts++);
 
 			ImGui::SameLine();
-			bool includeEntInNewVal = !ImGui::SmallButton("-");
+			bool includeEntInNewVal = !SptImGui::SmallIconButton(ICON_CI_TRASH);
 			ImGui::SetItemTooltip("remove entity");
 			if (includeEntInNewVal)
 			{
@@ -654,7 +655,7 @@ void EntProps::ImGuiEntInfoCvarCallback(ConVar& var)
 			if (ImGui::IsItemHovered() && regexBuf[0] != '\0')
 				ImGui::SetItemTooltip("enter regex");
 			ImGui::SameLine();
-			if (ImGui::SmallButton("-"))
+			if (SptImGui::SmallIconButton(ICON_CI_TRASH))
 				updateCvar = true;
 			else
 				newVal.appendf(",%s", regexBuf);
@@ -668,7 +669,8 @@ void EntProps::ImGuiEntInfoCvarCallback(ConVar& var)
 			catch (const std::regex_error& exp)
 			{
 				ImGui::SameLine();
-				ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW, "(invalid regex)");
+				ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW,
+				                   ICON_CI_WARNING " invalid regex " ICON_CI_WARNING);
 				ImGui::SetItemTooltip("%s", exp.what());
 			}
 
@@ -678,7 +680,7 @@ void EntProps::ImGuiEntInfoCvarCallback(ConVar& var)
 		i = nextSepIdx;
 	}
 
-	if (ImGui::SmallButton("+"))
+	if (SptImGui::SmallIconButton(ICON_CI_ADD))
 	{
 		newVal.appendf("%s-1,.*", nEnts == 0 ? "" : ";");
 		updateCvar = true;
