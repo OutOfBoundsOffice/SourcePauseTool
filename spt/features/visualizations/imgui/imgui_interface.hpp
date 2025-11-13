@@ -4,6 +4,7 @@
 #include "spt/cvars.hpp"
 #include "spt/utils/ent_list.hpp"
 #include "spt/utils/portal_utils.hpp"
+#include "thirdparty/fonts/codicon/codepoints/IconsCodicons.h"
 
 class SptImGuiFeature;
 class SptImGui;
@@ -169,10 +170,10 @@ namespace SptImGuiGroup
 	inline Tab Root{"SPT", nullptr};
 
 	// render overlay
-	inline Tab Overlay{"Overlay", &Root};
+	inline Tab Overlay{ICON_CI_MULTIPLE_WINDOWS " Overlay", &Root};
 
 	// drawing visualizations
-	inline Tab Draw{"Drawing", &Root};
+	inline Tab Draw{ICON_CI_SYMBOL_COLOR " Drawing", &Root};
 	inline Tab Draw_Collides{"Collision", &Draw};
 	inline Tab Draw_Collides_World{"World collides", &Draw_Collides};
 	inline Tab Draw_Collides_Ents{"Entity collides", &Draw_Collides};
@@ -189,13 +190,13 @@ namespace SptImGuiGroup
 	inline Section Draw_Misc_LeafVis{"Leaf vis", &Draw_Misc};
 
 	// player trace
-	inline Tab PlayerTrace{"Player trace", &Root};
-	inline Tab PlayerTrace_Player{"Player data", &PlayerTrace};
-	inline Tab PlayerTrace_Entities{"Active entities", &PlayerTrace};
-	inline Tab PlayerTrace_Portals{"Active portals", &PlayerTrace};
+	inline Tab PlayerTrace{ICON_CI_ISSUE_REOPENED " Player trace", &Root};
+	inline Tab PlayerTrace_Player{ICON_CI_PERSON " Player data", &PlayerTrace};
+	inline Tab PlayerTrace_Entities{ICON_CI_PACKAGE " Active entities", &PlayerTrace};
+	inline Tab PlayerTrace_Portals{ICON_CI_CIRCLE_LARGE " Active portals", &PlayerTrace};
 
 	// quality of life and/or purely visual stuff
-	inline Tab QoL{"QoL", &Root};
+	inline Tab QoL{ICON_CI_SMILEY " QoL", &Root};
 	inline Section QoL_Demo{"Demo utils", &QoL};
 	inline Section QoL_MultiInstance{"Multiple game instances", &QoL};
 	inline Section QoL_Noclip{"Noclip", &QoL}; // QoL instead of in cheats cuz noclip is cheating anyways :)
@@ -206,12 +207,12 @@ namespace SptImGuiGroup
 	inline Section QoL_Timer{"Timer", &QoL};
 
 	// cheats - stuff that changes gameplay or cannot be done via normal means
-	inline Tab Cheats{"Cheats", &Root};
+	inline Tab Cheats{ICON_CI_SHIELD " Cheats", &Root};
 	inline Tab Cheats_PortalSpecific{"Portal specific", &Cheats};
 	inline Section Cheats_PortalSpecific_SetSg{"Set SG", &Cheats_PortalSpecific};
 	inline Section Cheats_PortalSpecific_VagCrash{"Prevent VAG crash", &Cheats_PortalSpecific};
 	inline Section Cheats_PortalSpecific_VagSearch{"VAG search", &Cheats_PortalSpecific};
-	inline Tab Cheats_Misc{"Misc", &Cheats};
+	inline Tab Cheats_Misc{"Misc.", &Cheats};
 	inline Section Cheats_Misc_Jumping{"Jumping", &Cheats_Misc};
 	inline Section Cheats_Misc_HL2AirControl{"HL2 air control", &Cheats_Misc};
 	inline Section Cheats_Misc_ISG{"ISG", &Cheats_Misc};
@@ -224,20 +225,20 @@ namespace SptImGuiGroup
 	inline Section Cheats_Misc_Tickrate{"Tickrate", &Cheats_Misc};
 
 	// spt_hud and friends
-	inline Tab Hud{"HUD", &Root};
+	inline Tab Hud{ICON_CI_SYMBOL_KEY " HUD", &Root};
 	inline Tab Hud_TextHud{"Text HUD", &Hud}; // use the RegisterHudCvarXXX functions below to add cvars here
 	inline Tab Hud_IHud{"Input HUD", &Hud};
 	inline Tab Hud_JHud{"Jump HUD", &Hud};
 	inline Tab Hud_StrafeHud{"Strafe HUD", &Hud};
 
+	// imgui settings
+	inline Tab Settings{ICON_CI_GEAR " Settings", &Root};
+
 	// development/debugging features
-	inline Tab Dev{"DEV", &Root};
+	inline Tab Dev{ICON_CI_BUG " DEV", &Root};
 	inline Section Dev_GameDetection{"Game detection", &Dev};
 	inline Section Dev_Mesh{"Meshes", &Dev};
 	inline Section Dev_ImGui{"ImGui developer settings", &Dev};
-
-	// imgui settings
-	inline Tab Settings{"Settings", &Root};
 
 	// should be last - for development to make sure that no one else creates Tabs & Sections :p
 	inline Tab _DummyLast{nullptr, nullptr};
@@ -304,16 +305,18 @@ public:
 		CVF_NONE = 0,
 		CVF_ALWAYS_QUOTE = 1 << 0, // always quote cvar value (default will only quote if the value has spaces)
 		CVF_NO_WRANGLE = 1 << 1,   // don't wrangle the name (use for non-spt cvars)
-
-		// TODO: copy/reset widgets
+		CVF_NO_COPY_BUTTON = 1 << 2,
+		CVF_NO_RESET_BUTTON = 1 << 3,
 	};
 
+	// ImGui::SmallButton, but even smaller!
+	static bool SmallIconButton(const char* label);
 	// a button for a ConCommand with no args, does NOT invoke the command (because of OE compat)
 	static bool CmdButton(const char* label, ConCommand& cmd);
 	// display cvar name & value
-	static void CvarValue(const ConVar& c, CvarValueFlags flags = CVF_NONE);
+	static void CvarValue(ConVar& c, CvarValueFlags flags = CVF_NONE);
 	// a checkbox for a boolean cvar, returns value of cvar
-	static bool CvarCheckbox(ConVar& c, const char* label);
+	static bool CvarCheckbox(ConVar& c, const char* label, CvarValueFlags flags = CVF_NO_RESET_BUTTON);
 	// a combo/dropdown box for a cvar with multiple integer options (does not use clipper - not optimized for huge lists), returns value of cvar
 	static int CvarCombo(ConVar& c, const char* label, const char* const* opts, size_t nOpts);
 	// a textbox for an integer in base 10 or 16, returns true if the value was modified
@@ -362,13 +365,16 @@ public:
 	static bool BeginBordered(const ImVec2& outer_size = {0.0f, 0.0f}, float inner_width = 0.0f);
 	static void EndBordered();
 	/*
-	* A scope for cvar/cmd widgets. Puts the whole widget into a group and disables it if the
-	* cvar/cmd is not registered. Does not check if the cvar is enabled & does not create a new
-	* ID scope. All of the above CvarXXX/CmdXXX widgets do this internally. The text HUD tab does
-	* not do add this for you - instead you should check the return of AddHudCallback (refer to the
-	* comments for the RegisterHudCvarXXX functions above).
+	* A scope for cvar/cmd widgets:
+	* - puts the whole diget into a group
+	* - disables the group if the cvar/cmd is not registered (and returns false)
+	* - creates a new ID scope
+	* - does *not* check if the cvar is enabled
+	* All of the above CvarXXX/CmdXXX widgets do this internally. The text HUD tab does not do this
+	* this for you - instead you should check the return of AddHudCallback (refer to the comments
+	* for the RegisterHudCvarXXX functions above).
 	*/
-	static void BeginCmdGroup(const ConCommandBase& cmdBase);
+	static bool BeginCmdGroup(const ConCommandBase& cmdBase);
 	static void EndCmdGroup();
 
 	struct AutocompletePersistData

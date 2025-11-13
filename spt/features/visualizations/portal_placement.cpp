@@ -755,7 +755,7 @@ void PortalPlacement::ImGuiGridPlacementCallback()
 {
 	ConCommand& cmd = y_spt_draw_pp_grid_command;
 	const char* wrangledName = WrangleLegacyCommandName(cmd.GetName(), true, nullptr);
-	if (ImGui::Button("Clear grid"))
+	if (ImGui::Button(ICON_CI_TRASH " Clear grid"))
 	{
 		const char* strArgs[] = {wrangledName, "0"};
 		cmd.Dispatch({ARRAYSIZE(strArgs), strArgs});
@@ -767,18 +767,24 @@ void PortalPlacement::ImGuiGridPlacementCallback()
 	bool disabled = !player || !spt_tracing.ORIG_GetActiveWeapon(player);
 	ImGui::BeginDisabled(disabled);
 
-	if (ImGui::Button("Draw for blue portal"))
+	const ImVec4 blueColor = {64 / 255.f, 160 / 255.f, 255 / 255.f, 255 / 255.f};
+	const ImVec4 orangeColor = {255 / 255.f, 160 / 255.f, 32 / 255.f, 255 / 255.f};
+	ImGui::PushStyleColor(ImGuiCol_Text, blueColor);
+	if (ImGui::Button(ICON_CI_CHECK_ALL " Draw for blue portal"))
 	{
 		const char* strArgs[] = {wrangledName, "1"};
 		cmd.Dispatch({ARRAYSIZE(strArgs), strArgs});
 	}
+	ImGui::PopStyleColor();
 	ImGui::SetItemTooltip("%s 1", wrangledName);
 	ImGui::SameLine();
-	if (ImGui::Button("Draw for orange portal"))
+	ImGui::PushStyleColor(ImGuiCol_Text, orangeColor);
+	if (ImGui::Button(ICON_CI_CHECK_ALL " Draw for orange portal"))
 	{
 		const char* strArgs[] = {wrangledName, "2"};
 		cmd.Dispatch({ARRAYSIZE(strArgs), strArgs});
 	}
+	ImGui::PopStyleColor();
 	ImGui::SetItemTooltip("%s 2", wrangledName);
 	ImGui::SameLine();
 	SptImGui::HelpMarker("Help text for %s:\n\n%s", wrangledName, cmd.GetHelpText());
@@ -829,7 +835,10 @@ void PortalPlacement::ImGuiGridPlacementCallback()
 
 	ImGui::EndDisabled();
 	if (disabled)
-		ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW, "! Player must exist and have a portal gun !");
+	{
+		ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW,
+		                   ICON_CI_WARNING " Player must exist and have a portal gun " ICON_CI_WARNING);
+	}
 }
 
 void PortalPlacement::ImGuiTextHudPortalPlacementCallback(ConVar& var)
