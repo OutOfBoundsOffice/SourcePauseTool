@@ -17,6 +17,9 @@
 #ifndef INC_X86_H
 #define INC_X86_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
 /*
  * Opcode-based X86 instruction analysis. In other words, *NOT* a disassembler.
  * Only cares about the instructions we expect to see in basic 32-bit userspace
@@ -445,6 +448,10 @@ int x86_len(const void *insn);
 
 /* Constructs a ModRM byte, assuming the parameters are all in range. */
 #define X86_MODRM(mod, reg, rm) (unsigned char)((mod) << 6 | (reg) << 3 | rm)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

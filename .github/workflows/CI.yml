@@ -16,32 +16,28 @@ on:
 
 jobs:
   Build:
-    name: Build (${{ matrix.configuration}}${{ matrix.config.Configuration_2 }})
+    name: Build ${{matrix.config.file}} (${{ matrix.Configuration }})
     runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
         Configuration: [Release, Debug]
         config:
-          - {SDK: orangebox}
-          - {SDK: bms, Configuration_2: ' BMS'}
-          - {SDK: sdk2013, Configuration_2: ' 2013'}
-          - {SDK: episode1, Configuration_2: ' OE'}
+          - {target: spt, file: spt.dll}
+          - {target: spt_2013, file: spt-2013.dll}
+          - {target: spt_oe, file: spt-oe.dll}
+          - {target: spt_bms, file: spt-bms.dll}
     steps:
       - name: Checkout SPT
         uses: actions/checkout@v4
       - name: Checkout submodules
         run: git submodule update --init -j $env:NUMBER_OF_PROCESSORS SPTLib
-      - uses: microsoft/setup-msbuild@v2
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -A Win32 -DCMAKE_BUILD_TYPE=${{matrix.Configuration}}
       - name: Build
-        run: msbuild -m -nologo -p:Configuration="${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }}" spt.sln
-      - name: Get SPT DLL name
-        id: get_spt_filename
-        run: |
-          $spt_filename = (Get-Item "${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }}\spt*.dll").BaseName
-          echo "spt_filename=$spt_filename" >> $env:GITHUB_OUTPUT
+        run: cmake --build ${{github.workspace}}/build --target ${{matrix.config.target}} -j $env:NUMBER_OF_PROCESSORS --config ${{matrix.Configuration}}
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }} - ${{ steps.get_spt_filename.outputs.spt_filename }}
-          path: ${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }}\${{ steps.get_spt_filename.outputs.spt_filename }}.dll
+          name: ${{matrix.config.file}} (${{matrix.Configuration}})
+          path: ${{github.workspace}}/build/${{matrix.Configuration}}/${{matrix.config.file}}
           if-no-files-found: error
