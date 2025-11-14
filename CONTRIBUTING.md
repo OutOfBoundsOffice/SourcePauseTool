@@ -1,10 +1,11 @@
 # How to add a new feature
 1. Copy and paste the spt/features/template.cpp.txt file
-2. Rename to yourfeature.cpp
-3. Rename the default class and instance
-4. Code
-5. Auto-format your code with clang-format (you can use the script format.sh to do this automatically, can be run with Git Bash)
-6. Create a pull request
+2. Rename to `yourfeature.cpp`
+3. Add `yourfeature.cpp` to the `SPT_SOURCES` block in CMakeLists.txt 
+4. Rename the default class and instance
+5. Code
+6. Auto-format your code with clang-format (you can use the script format.sh to do this automatically, can be run with Git Bash). In visual studio you can run clang-format with `Ctrl+K+D`.
+7. Create a pull request
 
 # Feature class virtual functions
 The `Feature` base class provides some virtual functions and that you may override in your feature to do setup. There's some potential here to shoot yourself in the foot when you are trying to use things inside other features. Try to limit dependencies between features and when you have to depend on another feature, make sure:
