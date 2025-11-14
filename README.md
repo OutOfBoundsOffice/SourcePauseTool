@@ -37,23 +37,32 @@ A plugin for all your pausing needs.
 1. Open Visual Studio 2022. Click on Tools → Get Tools and Features... from the top bar of the window.
 <br>This should open the Visual Studio Installer in another window. From the Workload tab, install `Desktop development with C++`. From the Individual Components tab, install:
     * MSVC v143 - VS 2022 C++ x64/x86 build tools
-2. Run the following in cmd:
+2. In Visual Studio, go to `Tools -> Options -> CMake`, and make sure one of the options to use CMake presets is set.
+3. Run the following in cmd:
     ```
     git clone --recurse-submodules https://github.com/OutOfBoundsOffice/SourcePauseTool.git
-    SourcePauseTool\spt.sln
     ```
-3. If Windows asks which program to open `spt.sln` with, choose Visual Studio.
-    1. If Visual Studio asks to retarget projects, press OK.
-    2. Once Visual Studio is open, right click `libMinHook`, click `Properties`, change `Platform Toolset` to the one corresponding to your Visual Studio version, and press OK.
-4. Choose the build configuration:
+4. To open the project in Visual Studio, do one of:
+    - from Visual Studio, click `File -> Open -> Folder` and open SourcePauseTool
+    - from Visual Studio, click `File -> Open -> CMake` and open SourcePauseTool/CMakeLists.txt
+    - from within the SourcePauseTool folder, right click -> 'Open with Visual Studio'
+5. Choose the build configuration:
     SDK                                                       | Configuration
     --------------------------------------------------------- | -------------
     Source SDK 2007 / New Engine / Source Unpack / Orange Box | `Release`
     Source SDK 2013 / SteamPipe / Latest                      | `Release 2013`
     Black Mesa                                                | `Release BMS`
     Source SDK 2006 / Old Engine                              | `Release OE`
-5. Click `Build > Build Solution`.
-<br>`spt*.dll` will be in `hl2sdk\utils\SourcePauseTool\<Build Configuration>`
+6. Click `Build > Build Solution`.
+<br>`spt*.dll` will be in `SourcePauseTool/build/Debug|Release`
+
+If you get a warning about `pwsh.exe` not being a recognized command, you can safely ignore it, or install from [here](https://github.com/PowerShell/PowerShell/releases).
+
+To build without Visual Studio, `cd` in to the directory and run:
+```
+cmake --preset base-x86
+cmake --build --preset "ALL (Debug)"
+```
 
 ### .srctas documentation
 .srctas is the SPT TAS script format. You can find its documentation [here](https://docs.google.com/document/d/11iu9kw5Ufa3-QaiR7poJWBwfe1I56wI6fBtDgmWZ8Aw).

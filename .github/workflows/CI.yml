@@ -16,32 +16,31 @@ on:
 
 jobs:
   Build:
-    name: Build (${{ matrix.configuration}}${{ matrix.config.Configuration_2 }})
+    name: Build ${{matrix.preset.name}}
     runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
-        Configuration: [Release, Debug]
-        config:
-          - {SDK: orangebox}
-          - {SDK: bms, Configuration_2: ' BMS'}
-          - {SDK: sdk2013, Configuration_2: ' 2013'}
-          - {SDK: episode1, Configuration_2: ' OE'}
+        preset:
+          - { name: "Debug",        file: "build/Debug/spt.dll" }
+          - { name: "Debug 2013",   file: "build/Debug/spt-2013.dll" }
+          - { name: "Debug BMS",    file: "build/Debug/spt-bms.dll" }
+          - { name: "Debug OE",     file: "build/Debug/spt-oe.dll" }
+          - { name: "Release",      file: "build/Release/spt.dll" }
+          - { name: "Release 2013", file: "build/Release/spt-2013.dll" }
+          - { name: "Release BMS",  file: "build/Release/spt-bms.dll" }
+          - { name: "Release OE",   file: "build/Release/spt-oe.dll" }
     steps:
       - name: Checkout SPT
         uses: actions/checkout@v4
       - name: Checkout submodules
         run: git submodule update --init -j $env:NUMBER_OF_PROCESSORS SPTLib
-      - uses: microsoft/setup-msbuild@v2
+      - name: Configure CMake
+        run: cmake --preset base-x86
       - name: Build
-        run: msbuild -m -nologo -p:Configuration="${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }}" spt.sln
-      - name: Get SPT DLL name
-        id: get_spt_filename
-        run: |
-          $spt_filename = (Get-Item "${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }}\spt*.dll").BaseName
-          echo "spt_filename=$spt_filename" >> $env:GITHUB_OUTPUT
+        run: cmake --build --preset "${{matrix.preset.name}}"
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }} - ${{ steps.get_spt_filename.outputs.spt_filename }}
-          path: ${{ matrix.Configuration }}${{ matrix.config.Configuration_2 }}\${{ steps.get_spt_filename.outputs.spt_filename }}.dll
+          name: ${{matrix.preset.name}}
+          path: ${{github.workspace}}/${{matrix.preset.file}}
           if-no-files-found: error

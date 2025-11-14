@@ -1,0 +1,81 @@
+{
+	"version": 6,
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 10
+	},
+	"configurePresets": [
+		{
+			"name": "base-x86",
+			"generator": "Visual Studio 17 2022",
+			"architecture": "Win32",
+			"toolset": "v143",
+			"binaryDir": "${sourceDir}/out/build/${presetName}",
+			"cacheVariables": {
+				"CMAKE_CONFIGURATION_TYPES": "Debug;Release"
+			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "ALL (Debug)",
+			"configurePreset": "base-x86",
+			"configuration": "Debug",
+			"targets": [ "spt", "spt-2013", "spt-bms", "spt-oe" ]
+		},
+		{
+			"name": "ALL (Release)",
+			"configurePreset": "base-x86",
+			"configuration": "Release",
+			"targets": [ "spt", "spt-2013", "spt-bms", "spt-oe" ]
+		},
+		{
+			"name": "Debug",
+			"configurePreset": "base-x86",
+			"configuration": "Debug",
+			"targets": [ "spt" ]
+		},
+		{
+			"name": "Debug 2013",
+			"configurePreset": "base-x86",
+			"configuration": "Debug",
+			"targets": [ "spt-2013" ]
+		},
+		{
+			"name": "Debug BMS",
+			"configurePreset": "base-x86",
+			"configuration": "Debug",
+			"targets": [ "spt-bms" ]
+		},
+		{
+			"name": "Debug OE",
+			"configurePreset": "base-x86",
+			"configuration": "Debug",
+			"targets": [ "spt-oe" ]
+		},
+		{
+			"name": "Release",
+			"configurePreset": "base-x86",
+			"configuration": "Release",
+			"targets": [ "spt" ]
+		},
+		{
+			"name": "Release 2013",
+			"configurePreset": "base-x86",
+			"configuration": "Release",
+			"targets": [ "spt-2013" ]
+		},
+		{
+			"name": "Release BMS",
+			"configurePreset": "base-x86",
+			"configuration": "Release",
+			"targets": [ "spt-bms" ]
+		},
+		{
+			"name": "Release OE",
+			"configurePreset": "base-x86",
+			"configuration": "Release",
+			"targets": [ "spt-oe" ]
+		}
+	]
+}
