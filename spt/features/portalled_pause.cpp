@@ -6,6 +6,7 @@
 #include "ent_utils.hpp"
 #include "game_detection.hpp"
 #include "spt\utils\ent_list.hpp"
+#include "interfaces.hpp"
 
 ConVar spt_on_portalled_pause_for("spt_on_portalled_pause_for",
                                   "0",
@@ -39,7 +40,7 @@ void PortalledPause::PreHook()
 
 void PortalledPause::LoadFeature()
 {
-	if (ORIG_TeleportTouchingEntity)
+	if (ORIG_TeleportTouchingEntity && interfaces::engine_client != nullptr)
 		InitConcommandBase(spt_on_portalled_pause_for);
 }
 

@@ -12,6 +12,7 @@
 #include "spt\utils\interfaces.hpp"
 #include "spt\utils\signals.hpp"
 #include "spt\cvars.hpp"
+#include "spt\sptlib-wrapper.hpp"
 #include "visualizations\player_trace\tr_config.hpp"
 
 #include "usercmd.h"
@@ -419,7 +420,7 @@ void Camera::InitHooks()
 
 bool Camera::CanOverrideView() const
 {
-	return interfaces::engine_client->IsInGame() || spt_demostuff.Demo_IsPlayingBack();
+	return interfaces::_engine_client->IsInGame() || spt_demostuff.Demo_IsPlayingBack();
 }
 
 bool Camera::CanInput() const
@@ -503,7 +504,7 @@ void Camera::HandleDriveMode(bool active)
 
 static ButtonCode_t bindToButtonCode(const char* bind)
 {
-	const char* key = interfaces::engine_client->Key_LookupBinding(bind);
+	const char* key = interfaces::_engine_client->Key_LookupBinding(bind);
 	if (!key)
 		return BUTTON_CODE_INVALID;
 	return interfaces::inputSystem->StringToButtonCode(key);
@@ -563,7 +564,7 @@ void Camera::HandleInput(bool active)
 				{
 					char buf[32] = {0};
 					snprintf(buf, sizeof(buf), "-%s %d", &binds[i][1], code);
-					interfaces::engine->ClientCmd(buf);
+					EngineConCmd(buf);
 					keyBits |= (1 << i);
 				}
 			}
@@ -1096,7 +1097,7 @@ IMPL_HOOK_THISCALL(Camera, void, CInput__MouseMove, void*, void* cmd)
 
 bool Camera::ShouldLoadFeature()
 {
-	return interfaces::engine_client != nullptr && interfaces::engine_vgui != nullptr
+	return interfaces::_engine_client != nullptr && interfaces::engine_vgui != nullptr
 	       && interfaces::vgui_input != nullptr && interfaces::inputSystem != nullptr;
 }
 

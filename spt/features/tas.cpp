@@ -152,7 +152,7 @@ TASFeature spt_tas;
 
 bool TASFeature::ShouldLoadFeature()
 {
-	return interfaces::engine != nullptr;
+	return interfaces::engine_client != nullptr;
 }
 
 Strafe::StrafeInput GetStrafeInput(float forwardmove, float sidemove, float yaw)
@@ -324,7 +324,7 @@ CON_COMMAND_F(spt_tas_script_new,
 
 void TASFeature::LoadFeature()
 {
-	if (AfterFramesSignal.Works)
+	if (AfterFramesSignal.Works && interfaces::engine_client != nullptr)
 	{
 		InitCommand(tas_script_load);
 		InitCommand(tas_script_search);

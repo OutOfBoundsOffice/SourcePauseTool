@@ -37,9 +37,7 @@ DEFINE_AUTOCOMPLETIONFILE_FUNCTION(exec, "cfg", ".cfg");
 
 bool AutocompleteFeature::ShouldLoadFeature()
 {
-	if (utils::DoesGameLookLikeDMoMM())
-		return false;
-	return !!(g_pCVar);
+	return g_pCVar != nullptr && interfaces::engine_server != nullptr;
 }
 
 void AutocompleteFeature::InitHooks() {}

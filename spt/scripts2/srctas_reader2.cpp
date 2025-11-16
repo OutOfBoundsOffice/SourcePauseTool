@@ -15,8 +15,6 @@
 #include "..\spt-serverplugin.hpp"
 #include "..\sptlib-wrapper.hpp"
 
-extern ConVar y_spt_gamedir;
-
 namespace scripts2
 {
 	SourceTASReader g_TASReader;
@@ -97,11 +95,6 @@ namespace scripts2
 		{
 			DevMsg("Attempting to parse a version 2 TAS script...\n");
 			Reset();
-#if OE
-			const char* dir = y_spt_gamedir.GetString();
-			if (dir == NULL || dir[0] == '\0')
-				Msg("WARNING: Trying to load a script file without setting the game directory with spt_gamedir in old engine!\n");
-#endif
 
 			std::string gameDir = GetGameDir();
 			scriptStream.open(gameDir + "\\" + fileName + SCRIPT_EXT);

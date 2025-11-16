@@ -7,6 +7,7 @@
 #include "playerio.hpp"
 #include "signals.hpp"
 #include "tas.hpp"
+#include "interfaces.hpp"
 
 #undef min
 #undef max
@@ -330,6 +331,12 @@ CON_COMMAND(_y_spt_setangle,
 		spt_aim.SetPitch(angles[PITCH]);
 		spt_aim.SetYaw(angles[YAW]);
 	}
+}
+
+bool AimFeature::ShouldLoadFeature()
+{
+	// Can't aim without SetViewAngles
+	return interfaces::engine_client != nullptr;
 }
 
 void AimFeature::LoadFeature()

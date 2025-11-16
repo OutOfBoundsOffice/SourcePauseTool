@@ -124,7 +124,7 @@ void PlayerIOFeature::InitHooks()
 
 bool PlayerIOFeature::ShouldLoadFeature()
 {
-	return interfaces::engine != nullptr && spt_entprops.ShouldLoadFeature();
+	return spt_entprops.ShouldLoadFeature();
 }
 
 void PlayerIOFeature::UnloadFeature()
@@ -712,11 +712,11 @@ CON_COMMAND(tas_print_movement_vars, "Prints movement vars.")
 
 CON_COMMAND(_y_spt_getangles, "Gets the view angles of the player.")
 {
-	if (!interfaces::engine)
+	if (!interfaces::engine_client)
 		return;
 
 	QAngle va;
-	interfaces::engine->GetViewAngles(va);
+	interfaces::engine_client->GetViewAngles(va);
 
 	Warning("View Angle (x): %f\n", va.x);
 	Warning("View Angle (y): %f\n", va.y);
@@ -927,10 +927,8 @@ void PlayerIOFeature::LoadFeature()
 
 	playerioAddressesWereFound = PlayerIOAddressesFound();
 
-	if (interfaces::engine)
-	{
+	if (interfaces::engine_client)
 		InitCommand(_y_spt_getangles);
-	}
 
 	if (playerioAddressesWereFound)
 	{

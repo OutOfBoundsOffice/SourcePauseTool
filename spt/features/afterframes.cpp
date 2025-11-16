@@ -5,6 +5,7 @@
 #include "..\cvars.hpp"
 #include "signals.hpp"
 #include "dbg.h"
+#include "interfaces.hpp"
 #include <sstream>
 
 AfterframesFeature spt_afterframes;
@@ -45,7 +46,8 @@ void AfterframesFeature::ResumeAfterframesQueue()
 
 bool AfterframesFeature::ShouldLoadFeature()
 {
-	return true;
+	// Can't run commands without EngineConCmd
+	return interfaces::engine_client != nullptr;
 }
 
 void AfterframesFeature::UnloadFeature() {}

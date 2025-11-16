@@ -1614,6 +1614,7 @@ del "$(OutDir)spt-version.obj"</Command>
     <ClInclude Include="spt\strafe\strafe_utils.hpp" />
     <ClInclude Include="spt\utils\convar.hpp" />
     <ClInclude Include="spt\utils\custom_interfaces\engine_client.hpp" />
+    <ClInclude Include="spt\utils\custom_interfaces\engine_server.hpp" />
     <ClInclude Include="spt\utils\custom_interfaces\surface.hpp" />
     <ClInclude Include="spt\utils\datamap_wrapper.hpp" />
     <ClInclude Include="spt\utils\ent_list.hpp" />

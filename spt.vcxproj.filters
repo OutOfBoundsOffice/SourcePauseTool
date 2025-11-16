@@ -1098,6 +1098,9 @@
     <ClInclude Include="spt\flatbuffers_schemas\fb_pack_defs.hpp">
       <Filter>spt\flatbuffers_schemas</Filter>
     </ClInclude>
+    <ClInclude Include="spt\utils\custom_interfaces\engine_server.hpp">
+      <Filter>spt\utils\custom_interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK includes &amp; libs">

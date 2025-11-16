@@ -6,6 +6,7 @@
 #include "playerio.hpp"
 #include "signals.hpp"
 #include "create_collide.hpp"
+#include "interfaces.hpp"
 
 #include "vphysics_interface.h"
 
@@ -84,7 +85,8 @@ static void Tick(bool simulating)
 
 bool QcCmdFeature::ShouldLoadFeature()
 {
-	return true;
+	// Can't run commands without EngineConCmd
+	return interfaces::engine_client != nullptr;
 }
 
 void QcCmdFeature::InitHooks() {}
