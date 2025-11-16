@@ -8,6 +8,7 @@
 #include "spt/utils/map_utils.hpp"
 #include "spt/utils/ent_list.hpp"
 #include "spt/utils/game_detection.hpp"
+#include "spt/utils/file.hpp"
 #include "spt/features/playerio.hpp"
 #include "spt/features/ent_props.hpp"
 #include "spt/utils/portal_utils.hpp"
@@ -24,18 +25,18 @@ void TrPlayerTrace::StartRecording()
 	Clear();
 
 	firstRecordedInfo.gameName = utils::GetGameName();
-	if (interfaces::engine)
+	if (interfaces::engine_server)
 	{
 		try
 		{
 			firstRecordedInfo.gameModName =
-			    std::filesystem::path{interfaces::engine->GetGameDirectory()}.filename().string();
+			    std::filesystem::path{GetGameDir()}.filename().string();
 		}
 		catch (...)
 		{
 		}
+		firstRecordedInfo.playerName = interfaces::engine_server->GetClientConVarValue(1, "name");
 	}
-	firstRecordedInfo.playerName = interfaces::engine_server->GetClientConVarValue(1, "name");
 	firstRecordedInfo.gameVersion = utils::GetBuildNumber();
 
 	hasStartRecordingBeenCalled = true;

@@ -14,7 +14,6 @@ public:
 	virtual int Cmd_Argc() = 0;
 	virtual const char* Cmd_Argv(int arg) = 0;
 #endif
-	virtual const char* GetGameDirectory() = 0;
 };
 
 #ifdef OE
@@ -81,17 +80,6 @@ public:
 	virtual const char* Cmd_Argv(int arg) override
 	{
 		return engine->Cmd_Argv(arg);
-	}
-
-	virtual const char* GetGameDirectory() override
-	{
-		extern const char* GetGameDirectoryOE();
-		return GetGameDirectoryOE();
-	}
-#else
-	virtual const char* GetGameDirectory() override
-	{
-		return engine->GetGameDirectory();
 	}
 #endif
 

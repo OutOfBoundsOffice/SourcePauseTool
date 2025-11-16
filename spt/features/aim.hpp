@@ -21,6 +21,7 @@ public:
 	void SetYaw(float yaw);
 	void ResetPitchYawCommands();
 	void SetJump();
+	virtual bool ShouldLoadFeature() override;
 	virtual void LoadFeature() override;
 
 protected:

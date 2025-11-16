@@ -164,12 +164,12 @@ struct ArgsWrapper
 
 	int ArgC() const
 	{
-		return interfaces::engine->Cmd_Argc();
+		return interfaces::engine_client->Cmd_Argc();
 	};
 
 	const char* Arg(int arg) const
 	{
-		return interfaces::engine->Cmd_Argv(arg);
+		return interfaces::engine_client->Cmd_Argv(arg);
 	};
 };
 
@@ -177,7 +177,7 @@ struct ArgsWrapper
 	static void name(ArgsWrapper args); \
 	static void name##_wrapper() \
 	{ \
-		if (!interfaces::engine) \
+		if (!interfaces::engine_client) \
 			return; \
 		ArgsWrapper args; \
 		name(args); \

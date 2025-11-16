@@ -4,6 +4,7 @@
 #include "SPTLib\MemUtils.hpp"
 #include "interfaces.hpp"
 #include "thirdparty\kmp-cpp.hpp"
+#include "file.hpp"
 #include <atomic>
 #include <thread>
 #include <future>
@@ -39,10 +40,10 @@ namespace utils
 		if (cachedCmd)
 			return result; // trust the cmd result more than the game directory
 
-		if (!cachedGameDir && interfaces::engine)
+		if (!cachedGameDir)
 		{
 #ifndef OE
-			auto game_dir = interfaces::engine->GetGameDirectory();
+			auto game_dir = GetGameDir();
 			result = (GetFileName(Convert(game_dir)) == L"portal");
 			cachedGameDir = true;
 #endif
@@ -119,10 +120,10 @@ namespace utils
 	bool DoesGameLookLikeEstranged()
 	{
 		static bool cached = false, result = false;
-		if (!cached && interfaces::engine)
+		if (!cached)
 		{
 #ifndef OE
-			auto game_dir = interfaces::engine->GetGameDirectory();
+			auto game_dir = GetGameDir();
 			result = (GetFileName(Convert(game_dir)) == L"estrangedact1");
 			cached = true;
 #endif

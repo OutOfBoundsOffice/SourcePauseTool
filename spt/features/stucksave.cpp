@@ -11,6 +11,7 @@
 #include "..\utils\ent_list.hpp"
 #include "create_collide.hpp"
 #include "signals.hpp"
+#include "interfaces.hpp"
 
 #define GAME_DLL
 #include "cbase.h"
@@ -46,7 +47,8 @@ static Stucksave spt_stucksave;
 
 bool Stucksave::ShouldLoadFeature()
 {
-	return true;
+	// Can't run commands without EngineConCmd
+	return interfaces::engine_client != nullptr;
 }
 
 namespace patterns

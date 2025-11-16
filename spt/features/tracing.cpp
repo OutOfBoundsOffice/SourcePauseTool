@@ -568,7 +568,7 @@ CON_COMMAND(y_spt_find_seam_shot, find_seam_shot_help)
 	{
 		if (firstInvocation)
 		{
-			interfaces::engine->GetViewAngles(firstAngle);
+			interfaces::engine_client->GetViewAngles(firstAngle);
 			firstPos = utils::GetPlayerEyePosition();
 			firstInvocation = !firstInvocation;
 
@@ -584,7 +584,7 @@ CON_COMMAND(y_spt_find_seam_shot, find_seam_shot_help)
 				return;
 			}
 			a = firstAngle;
-			interfaces::engine->GetViewAngles(b);
+			interfaces::engine_client->GetViewAngles(b);
 		}
 	}
 	else
@@ -617,7 +617,7 @@ CON_COMMAND(y_spt_find_seam_shot, find_seam_shot_help)
 		if (trace_fire_portal(test, test_normal) - distance > GOOD_DISTANCE_DIFFERENCE)
 		{
 			Msg("Found a seam shot at setang %.8f %.8f 0\n", test.x, test.y);
-			interfaces::engine->SetViewAngles(test);
+			interfaces::engine_client->SetViewAngles(test);
 			return;
 		}
 
@@ -638,7 +638,7 @@ CON_COMMAND(y_spt_find_seam_shot, find_seam_shot_help)
 	} while (difference > eps);
 
 	Msg("Could not find a seam shot. Best guess: setang %.8f %.8f 0\n", test.x, test.y);
-	interfaces::engine->SetViewAngles(test);
+	interfaces::engine_client->SetViewAngles(test);
 }
 #endif
 
@@ -651,7 +651,7 @@ void Tracing::LoadFeature()
 		Warning("spt_tas_strafe_version 2 not available\n");
 
 #ifdef SPT_TRACE_PORTAL_ENABLED
-	if (utils::DoesGameLookLikePortal() && ORIG_TraceFirePortal)
+	if (interfaces::engine_client != nullptr && utils::DoesGameLookLikePortal() && ORIG_TraceFirePortal)
 	{
 		InitCommand(y_spt_find_seam_shot);
 	}

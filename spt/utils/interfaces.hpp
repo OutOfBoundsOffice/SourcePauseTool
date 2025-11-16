@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "custom_interfaces\engine_client.hpp"
+#include "custom_interfaces\engine_server.hpp"
 #include "custom_interfaces\surface.hpp"
 #include "eiface.h"
 #include "tier3\tier3.h"
@@ -23,9 +24,10 @@ class IGameMovement;
 
 namespace interfaces
 {
-	extern std::unique_ptr<EngineClientWrapper> engine;
-	extern IVEngineServer* engine_server;
-	extern IVEngineClient* engine_client;
+	extern std::unique_ptr<EngineClientWrapper> engine_client;
+	extern std::unique_ptr<EngineServerWrapper> engine_server;
+	extern IVEngineServer* _engine_server;
+	extern IVEngineClient* _engine_client;
 	extern std::unique_ptr<SurfaceWrapper> surface;
 	extern IMatSystemSurface* mat_system_surface;
 	extern vgui::ISchemeManager* scheme;

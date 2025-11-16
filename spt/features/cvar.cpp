@@ -184,7 +184,7 @@ void CvarStuff::PreHook()
 void CvarStuff::LoadFeature()
 {
 #ifdef OE
-	if (g_pCVar || interfaces::engine)
+	if (g_pCVar || interfaces::engine_client)
 	{
 		InitCommand(y_spt_cvar);
 		InitCommand(y_spt_cvar_random);

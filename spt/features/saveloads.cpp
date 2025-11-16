@@ -6,6 +6,7 @@
 #include "..\features\afterticks.hpp"
 #include "spt\features\hud.hpp"
 #include "visualizations/imgui/imgui_interface.hpp"
+#include "interfaces.hpp"
 
 #include <format>
 
@@ -124,7 +125,8 @@ ConVar y_spt_hud_saveloads_showcurindex("y_spt_hud_saveloads_showcurindex",
 
 bool SaveloadsFeature::ShouldLoadFeature()
 {
-	return true;
+	// Can't run commands without EngineConCmd
+	return interfaces::engine_client != nullptr;
 }
 
 void SaveloadsFeature::LoadFeature()

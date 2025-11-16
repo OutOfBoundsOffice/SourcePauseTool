@@ -17,6 +17,7 @@
 #include "..\features\playerio.hpp"
 #include "..\features\tas.hpp"
 #include "custom_interfaces\engine_client.hpp"
+#include "custom_interfaces\engine_server.hpp"
 #include "cvars.hpp"
 #include "scripts\srctas_reader.hpp"
 #include "..\feature.hpp"
@@ -38,6 +39,7 @@
 #include "SDK\igamemovement.h"
 #include "interfaces.hpp"
 #include "signals.hpp"
+#include "file.hpp"
 
 #if SSDK2007
 #include "mathlib\vmatrix.h"
@@ -49,9 +51,10 @@ using namespace std::literals;
 
 namespace interfaces
 {
-	std::unique_ptr<EngineClientWrapper> engine;
-	IVEngineServer* engine_server = nullptr;
-	IVEngineClient* engine_client = nullptr;
+	std::unique_ptr<EngineClientWrapper> engine_client;
+	std::unique_ptr<EngineServerWrapper> engine_server;
+	IVEngineServer* _engine_server = nullptr;
+	IVEngineClient* _engine_client = nullptr;
 	std::unique_ptr<SurfaceWrapper> surface;
 	IMatSystemSurface* mat_system_surface = nullptr;
 	vgui::ISchemeManager* scheme = nullptr;
@@ -91,16 +94,16 @@ ConVar* _sv_cheats = nullptr;
 
 void CallServerCommand(const char* cmd)
 {
-	if (interfaces::engine)
-		interfaces::engine->ClientCmd(cmd);
+	if (interfaces::engine_client)
+		interfaces::engine_client->ClientCmd(cmd);
 }
 
 void GetViewAngles(float viewangles[3])
 {
-	if (interfaces::engine)
+	if (interfaces::engine_client)
 	{
 		QAngle va;
-		interfaces::engine->GetViewAngles(va);
+		interfaces::engine_client->GetViewAngles(va);
 
 		viewangles[0] = va.x;
 		viewangles[1] = va.y;
@@ -110,10 +113,10 @@ void GetViewAngles(float viewangles[3])
 
 void SetViewAngles(const float viewangles[3])
 {
-	if (interfaces::engine)
+	if (interfaces::engine_client)
 	{
 		QAngle va(viewangles[0], viewangles[1], viewangles[2]);
-		interfaces::engine->SetViewAngles(va);
+		interfaces::engine_client->SetViewAngles(va);
 	}
 }
 
@@ -305,11 +308,11 @@ bool CSourcePauseTool::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceF
 
 	interfaces::gm = (IGameMovement*)gameServerFactory(INTERFACENAME_GAMEMOVEMENT, NULL);
 	g_pCVar = (ICvar*)interfaceFactory(CVAR_INTERFACE_VERSION, NULL);
-	interfaces::engine_server = (IVEngineServer*)interfaceFactory(INTERFACEVERSION_VENGINESERVER, NULL);
+	interfaces::_engine_server = (IVEngineServer*)interfaceFactory(INTERFACEVERSION_VENGINESERVER, NULL);
 #ifdef BMS
-	interfaces::engine_client = (IVEngineClient*)interfaceFactory("VEngineClient015", NULL);
+	interfaces::_engine_client = (IVEngineClient*)interfaceFactory("VEngineClient015", NULL);
 #else
-	interfaces::engine_client = (IVEngineClient*)interfaceFactory(VENGINE_CLIENT_INTERFACE_VERSION, NULL);
+	interfaces::_engine_client = (IVEngineClient*)interfaceFactory(VENGINE_CLIENT_INTERFACE_VERSION, NULL);
 #endif
 	interfaces::debugOverlay = (IVDebugOverlay*)interfaceFactory(VDEBUG_OVERLAY_INTERFACE_VERSION, NULL);
 	interfaces::materialSystem = (IMaterialSystem*)interfaceFactory(MATERIAL_SYSTEM_INTERFACE_VERSION, NULL);
@@ -391,27 +394,21 @@ bool CSourcePauseTool::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceF
 	ReplaceAutoCompleteSuggest();
 #endif
 
-	if (interfaces::engine_client)
+	if (interfaces::_engine_client)
 	{
 #ifdef OE
 		if (utils::DoesGameLookLikeDMoMM())
-			interfaces::engine = std::make_unique<IVEngineClientWrapper<IVEngineClientDMoMM>>(
-			    reinterpret_cast<IVEngineClientDMoMM*>(interfaces::engine_client));
+			interfaces::engine_client = std::make_unique<IVEngineClientWrapper<IVEngineClientDMoMM>>(
+			    reinterpret_cast<IVEngineClientDMoMM*>(interfaces::_engine_client));
 #endif
 		// Check if we assigned it in the ifdef above.
-		if (!interfaces::engine)
-			interfaces::engine =
-			    std::make_unique<IVEngineClientWrapper<IVEngineClient>>(interfaces::engine_client);
+		if (!interfaces::engine_client)
+			interfaces::engine_client =
+			    std::make_unique<IVEngineClientWrapper<IVEngineClient>>(interfaces::_engine_client);
 	}
 
-	if (!interfaces::engine)
-	{
+	if (!interfaces::engine_client)
 		DevWarning("SPT: Failed to get the IVEngineClient interface.\n");
-		Warning("SPT: spt_afterframes has no effect.\n");
-		Warning("SPT: spt_setpitch and spt_setyaw have no effect.\n");
-		Warning("SPT: spt_pitchspeed and spt_yawspeed have no effect.\n");
-		Warning("SPT: spt_stucksave has no effect.\n");
-	}
 
 	if (utils::DoesGameLookLikePortal())
 	{
@@ -422,15 +419,21 @@ bool CSourcePauseTool::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceF
 		tas_reset_surface_friction.SetValue(0);
 	}
 
-	if (!interfaces::engine_server)
+	if (interfaces::_engine_server)
 	{
-		DevWarning("SPT: Failed to get the IVEngineServer interface.\n");
+#ifdef OE
+		if (utils::DoesGameLookLikeDMoMM())
+			interfaces::engine_server = std::make_unique<IVEngineServerWrapper<IVEngineServerDMoMM>>(
+			    reinterpret_cast<IVEngineServerDMoMM*>(interfaces::_engine_server));
+#endif
+		// Check if we assigned it in the ifdef above.
+		if (!interfaces::engine_server)
+			interfaces::engine_server =
+			    std::make_unique<IVEngineServerWrapper<IVEngineServer>>(interfaces::_engine_server);
 	}
 
-	if (!interfaces::engine_client)
-	{
-		DevWarning("SPT: Failed to get the IVEngineClient interface.\n");
-	}
+	if (!interfaces::engine_server)
+		DevWarning("SPT: Failed to get the IVEngineServer interface.\n");
 
 	if (interfaces::mat_system_surface)
 	{
@@ -477,15 +480,10 @@ bool CSourcePauseTool::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceF
 	}
 
 	if (!interfaces::mat_system_surface)
-	{
 		DevWarning("SPT: Failed to get the IMatSystemSurface interface.\n");
-	}
 
 	if (!interfaces::debugOverlay)
-	{
 		DevWarning("SPT: Failed to get the debug overlay interface.\n");
-		Warning("Seam visualization has no effect.\n");
-	}
 
 	if (!interfaces::materialSystem)
 		DevWarning("SPT: Failed to get the material system interface.\n");
