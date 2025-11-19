@@ -873,9 +873,6 @@
     <ClInclude Include="spt\utils\spt_vprof.hpp">
       <Filter>spt\utils</Filter>
     </ClInclude>
-    <ClInclude Include="spt\features\visualizations\imgui\jetbrains_mono_bold.hpp">
-      <Filter>spt\features\visualizations\imgui</Filter>
-    </ClInclude>
     <ClInclude Include="spt\features\visualizations\imgui\imgui_styles.hpp">
       <Filter>spt\features\visualizations\imgui</Filter>
     </ClInclude>
@@ -1098,6 +1095,15 @@
     <ClInclude Include="spt\flatbuffers_schemas\fb_pack_defs.hpp">
       <Filter>spt\flatbuffers_schemas</Filter>
     </ClInclude>
+    <ClInclude Include="thirdparty\fonts\jetbrains_mono_bold\jetbrains_mono_bold.hpp">
+      <Filter>thirdparty\fonts\jetbrains_mono_bold</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\fonts\codicon\codicon.hpp">
+      <Filter>thirdparty\fonts\codicon</Filter>
+    </ClInclude>
+    <ClInclude Include="thirdparty\fonts\codicon\codepoints\IconsCodicons.h">
+      <Filter>thirdparty\fonts\codicon\codepoints</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="SDK includes &amp; libs">
@@ -1202,6 +1208,15 @@
     <Filter Include="spt\flatbuffers_schemas\gen">
       <UniqueIdentifier>{3bb77c97-164a-46cd-b566-60d3038a6da7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="thirdparty\fonts\jetbrains_mono_bold">
+      <UniqueIdentifier>{013ff4c4-16ec-4bbd-8874-aaf8238954ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\fonts\codicon">
+      <UniqueIdentifier>{38bf6ea7-4a7a-4d43-809f-16810a9cc6df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="thirdparty\fonts\codicon\codepoints">
+      <UniqueIdentifier>{625ef0ac-0201-4398-8ca5-4778ddd7b629}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="thirdparty\example.txt">
@@ -1215,6 +1230,9 @@
     </Text>
     <Text Include="spt\flatbuffers_schemas\gen\README.txt">
       <Filter>spt\flatbuffers_schemas\gen</Filter>
+    </Text>
+    <Text Include="thirdparty\fonts\README.txt">
+      <Filter>thirdparty\fonts</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

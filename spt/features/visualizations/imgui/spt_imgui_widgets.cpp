@@ -49,6 +49,14 @@ public:
 
 } static g_SptImGuiUserStorage;
 
+bool SptImGui::SmallIconButton(const char* label)
+{
+	ImGui::PushStyleVarX(ImGuiStyleVar_FramePadding, 0.f);	
+	bool ret = ImGui::SmallButton(label);
+	ImGui::PopStyleVar();
+	return ret;
+}
+
 bool SptImGui::CmdButton(const char* label, ConCommand& cmd)
 {
 	BeginCmdGroup(cmd);
@@ -61,21 +69,37 @@ bool SptImGui::CmdButton(const char* label, ConCommand& cmd)
 	return ret;
 }
 
-void SptImGui::CvarValue(const ConVar& c, CvarValueFlags flags)
+void SptImGui::CvarValue(ConVar& c, CvarValueFlags flags)
 {
 	BeginCmdGroup(c);
 	const char* v = c.GetString();
 	const char* surround = "";
-	if ((flags & CVF_ALWAYS_QUOTE) || !*v || strchr(v, ' '))
+	if ((flags & CVF_ALWAYS_QUOTE) || !*v || strpbrk(v, " \t\n\f\r\v"))
 		surround = "\"";
 	const char* name = flags & CVF_NO_WRANGLE ? c.GetName() : WrangleLegacyCommandName(c.GetName(), true, nullptr);
-	ImGui::TextDisabled("(%s %s%s%s)", name, surround, v, surround);
+	ImGuiTextBuffer cvarValueBuf;
+	cvarValueBuf.appendf("%s %s%s%s", name, surround, v, surround);
+	ImGui::TextDisabled("(%s)", cvarValueBuf.c_str());
+	if (~flags & CVF_NO_RESET_BUTTON)
+	{
+		ImGui::SameLine();
+		if (SmallIconButton(ICON_CI_DEBUG_RESTART))
+			c.SetValue(c.GetDefault());
+		ImGui::SetItemTooltip("Reset to default value: %s%s%s", surround, c.GetDefault(), surround);
+	}
+	if (~flags & CVF_NO_COPY_BUTTON)
+	{
+		ImGui::SameLine();
+		if (SmallIconButton(ICON_CI_COPY))
+			ImGui::SetClipboardText(cvarValueBuf.c_str());
+		ImGui::SetItemTooltip("Copy current value to clipboard");
+	}
 	ImGui::SameLine();
 	HelpMarker("%s", c.GetHelpText());
 	EndCmdGroup();
 }
 
-bool SptImGui::CvarCheckbox(ConVar& c, const char* label)
+bool SptImGui::CvarCheckbox(ConVar& c, const char* label, CvarValueFlags flags)
 {
 	BeginCmdGroup(c);
 	bool oldVal = c.GetBool();
@@ -84,7 +108,7 @@ bool SptImGui::CvarCheckbox(ConVar& c, const char* label)
 	if (oldVal != newVal)
 		c.SetValue(newVal); // only set value if it was changed to not spam cvar callbacks
 	ImGui::SameLine();
-	CvarValue(c);
+	CvarValue(c, flags);
 	EndCmdGroup();
 	return newVal;
 }
@@ -315,7 +339,7 @@ void SptImGui::HelpMarker(const char* fmt, ...)
 {
 	va_list va;
 	va_start(va, fmt);
-	ImGui::TextDisabled("(?)");
+	ImGui::TextDisabled(ICON_CI_QUESTION);
 	if (ImGui::BeginItemTooltip())
 	{
 		ImGui::PushTextWrapPos(-1.f);
@@ -351,12 +375,15 @@ void SptImGui::EndBordered()
 	ImGui::EndTable();
 }
 
-void SptImGui::BeginCmdGroup(const ConCommandBase& cmdBase)
+bool SptImGui::BeginCmdGroup(const ConCommandBase& cmdBase)
 {
+	ImGui::PushID(&cmdBase);
 	ImGui::BeginGroup();
-	ImGui::BeginDisabled(!cmdBase.IsRegistered());
+	bool enabled = cmdBase.IsRegistered();
+	ImGui::BeginDisabled(!enabled);
 	auto adr = &cmdBase; // assume the command has a constant address
 	g_SptImGuiUserStorage.Push(&adr, sizeof adr);
+	return enabled;
 }
 
 void SptImGui::EndCmdGroup()
@@ -370,6 +397,7 @@ void SptImGui::EndCmdGroup()
 		                      cmdBase->IsCommand() ? "ConCommand" : "ConVar",
 		                      WrangleLegacyCommandName(cmdBase->GetName(), true, nullptr));
 	}
+	ImGui::PopID();
 }
 
 void SptImGui::TextInputAutocomplete(const char* inputTextLabel,

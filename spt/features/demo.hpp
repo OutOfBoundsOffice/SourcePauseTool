@@ -17,6 +17,8 @@ public:
 
 	DECL_HOOK_CDECL(void, Stop);
 
+	void** pDemoplayer = nullptr;
+
 protected:
 	virtual bool ShouldLoadFeature() override;
 	virtual void InitHooks() override;
@@ -29,7 +31,6 @@ private:
 	int GetTotalTicks_Offset = 0;
 	int IsPlayingBack_Offset = 0;
 	int IsPlaybackPaused_Offset = 0;
-	void** pDemoplayer = nullptr;
 	int currentAutoRecordDemoNumber = 1;
 	int m_nDemoNumber_Offset = 0;
 	int m_bRecording_Offset = 0;
@@ -39,6 +40,7 @@ private:
 	DECL_HOOK_THISCALL(bool, CDemoPlayer__StartPlayback, void*, const char* filename, bool as_time_demo);
 	DECL_HOOK_THISCALL(const char*, CDemoFile__ReadConsoleCommand, void*);
 	uintptr_t ORIG_Record = 0;
+
 	void OnFrame();
 	void OnSignonStateSignal(void* thisptr, int state);
 };
