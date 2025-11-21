@@ -108,7 +108,7 @@ ConVar tas_force_onground(
     FCVAR_TAS_RESET,
     "If enabled, strafing assumes the player is on ground regardless of what the prediction indicates. Useful for save glitch in Portal where the prediction always reports the player being in the air.\n");
 ConVar tas_strafe_version("tas_strafe_version",
-                          "9",
+                          "10",
                           FCVAR_TAS_RESET,
                           "Strafe version. For backwards compatibility with old scripts.");
 

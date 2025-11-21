@@ -171,15 +171,15 @@ namespace Strafe
 		if ((player.DuckPressed && !tas_strafe_autojb.GetBool()) || !tas_strafe_use_tracing.GetBool()
 		    || !utils::spt_serverEntList.GetPlayer())
 			return false;
-		else
-		{
-			trace_t tr;
-			Vector duckedOrigin(player.UnduckedOrigin);
-			duckedOrigin.z -= 36;
-			TracePlayer(tr, duckedOrigin, player.UnduckedOrigin, Strafe::HullType::DUCKED);
 
+		trace_t tr;
+		Vector duckedOrigin(player.UnduckedOrigin);
+		duckedOrigin.z -= 36;
+		TracePlayer(tr, duckedOrigin, player.UnduckedOrigin, Strafe::HullType::DUCKED);
+
+		if (tas_strafe_version.GetInt() < 10)
 			return tr.fraction == 1.0f;
-		}
+		return !tr.startsolid && (tr.fraction == 1.0f);
 	}
 
 	PositionType GetPositionType(PlayerData& player, HullType hull)
