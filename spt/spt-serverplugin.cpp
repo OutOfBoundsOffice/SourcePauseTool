@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <functional>
+#include <future>
 #include <sstream>
 #include <time.h>
 
