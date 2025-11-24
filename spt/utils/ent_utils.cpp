@@ -39,9 +39,10 @@ namespace utils
 	{
 		void* value = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(ptr) + prop->GetOffset());
 		Vector v;
+		Vector2D v2;
 		int ehandle;
 
-		switch (prop->m_RecvType)
+		switch (GetPropTypeVersionAdjust(prop->m_RecvType))
 		{
 		case DPT_Int:
 			if (strstr(prop->GetName(), "m_h") != NULL)
@@ -65,9 +66,13 @@ namespace utils
 			v = *reinterpret_cast<Vector*>(value);
 			sprintf_s(buffer, size, "(%.3f, %.3f, %.3f)", v.x, v.y, v.z);
 			break;
-#ifdef SSDK2007
+#ifndef OE
+		case DPT_VectorXY:
+			v2 = *reinterpret_cast<Vector2D*>(value);
+			sprintf_s(buffer, size, "(%.3f, %.3f)", v2.x, v2.y);
+			break;
 		case DPT_String:
-			sprintf_s(buffer, size, "%s", *reinterpret_cast<const char**>(value));
+			sprintf_s(buffer, size, "%s", reinterpret_cast<const char*>(value));
 			break;
 #endif
 		default:
@@ -82,6 +87,15 @@ namespace utils
 	void AddProp(std::vector<propValue>& props, const char* name, RecvProp* prop)
 	{
 		props.push_back(propValue(name, BUFFER, prop));
+	}
+
+	SendPropType GetPropTypeVersionAdjust(SendPropType original)
+	{
+#ifdef SSDK2007
+		if (original >= DPT_VectorXY && utils::GetBuildNumber() < 5135)
+			return (SendPropType)(original - 1);
+#endif
+		return original;
 	}
 
 	void GetAllProps(RecvTable* table, void* ptr, std::vector<propValue>& props)
