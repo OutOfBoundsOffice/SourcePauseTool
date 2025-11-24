@@ -20,10 +20,11 @@ namespace utils
 		RecvProp* prop;
 
 		int GetOffset();
-		propValue(const char* name, const char* value, RecvProp* prop) : name(name), value(value), prop(prop) {}
 	};
 
-	void GetAllProps(RecvTable* table, void* ptr, std::vector<propValue>& props);
+	// may need to adjust for different games since RecvProp::m_RecvType changed between versions, see issue #435
+	SendPropType GetPropTypeVersionAdjust(SendPropType original);
+	void GetAllProps(RecvTable* table, void* ptr, std::vector<propValue>& props, std::string prefix = "");
 	void PrintAllProps(int index);
 	Vector GetPlayerEyePosition();
 	QAngle GetPlayerEyeAngles();

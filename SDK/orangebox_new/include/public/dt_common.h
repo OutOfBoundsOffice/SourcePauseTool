@@ -103,6 +103,7 @@ typedef enum
 	DPT_Int=0,
 	DPT_Float,
 	DPT_Vector,
+	DPT_VectorXY, // Only encodes the XY of a vector, ignores Z
 	DPT_String,
 	DPT_Array,	// An array of the base types (can't be of datatables).
 	DPT_DataTable,

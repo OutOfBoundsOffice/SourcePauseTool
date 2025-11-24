@@ -32,16 +32,18 @@
 #endif
 
 extern ConVar y_spt_piwsave;
+extern ConVar spt_hud_ent_info_recurse;
 
 namespace utils
 {
-	void GetPropValue(RecvProp* prop, void* ptr, char* buffer, size_t size)
+	void GetPropValue(RecvProp* prop, void* ptr, char* buffer, size_t size, std::vector<propValue>& props)
 	{
 		void* value = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(ptr) + prop->GetOffset());
 		Vector v;
+		Vector2D v2;
 		int ehandle;
 
-		switch (prop->m_RecvType)
+		switch (GetPropTypeVersionAdjust(prop->m_RecvType))
 		{
 		case DPT_Int:
 			if (strstr(prop->GetName(), "m_h") != NULL)
@@ -65,26 +67,34 @@ namespace utils
 			v = *reinterpret_cast<Vector*>(value);
 			sprintf_s(buffer, size, "(%.3f, %.3f, %.3f)", v.x, v.y, v.z);
 			break;
-#ifdef SSDK2007
+#ifndef OE
+		case DPT_VectorXY:
+			v2 = *reinterpret_cast<Vector2D*>(value);
+			sprintf_s(buffer, size, "(%.3f, %.3f)", v2.x, v2.y);
+			break;
 		case DPT_String:
-			sprintf_s(buffer, size, "%s", *reinterpret_cast<const char**>(value));
+			sprintf_s(buffer, size, "%s", reinterpret_cast<const char*>(value));
 			break;
 #endif
+		case DPT_DataTable:
+			Assert(0); // should be handled higher up
+			[[fallthrough]];
 		default:
 			sprintf_s(buffer, size, "unable to parse");
 			break;
 		}
 	}
 
-	const size_t BUFFER_SIZE = 256;
-	static char BUFFER[BUFFER_SIZE];
-
-	void AddProp(std::vector<propValue>& props, const char* name, RecvProp* prop)
+	SendPropType GetPropTypeVersionAdjust(SendPropType original)
 	{
-		props.push_back(propValue(name, BUFFER, prop));
+#ifdef SSDK2007
+		if (original >= DPT_VectorXY && utils::GetBuildNumber() < 5135)
+			return (SendPropType)(original + 1);
+#endif
+		return original;
 	}
 
-	void GetAllProps(RecvTable* table, void* ptr, std::vector<propValue>& props)
+	void GetAllProps(RecvTable* table, void* ptr, std::vector<propValue>& props, std::string prefix)
 	{
 		int numProps = table->m_nProps;
 
@@ -99,12 +109,30 @@ namespace utils
 				if (base)
 					GetAllProps(base, ptr, props);
 			}
-			else if (
-				prop->GetOffset()
-				!= 0) // There's various garbage attributes at offset 0 for a thusfar unbeknownst reason
+			else if (prop->GetOffset() != 0) // custom proxyFns may get a zero offset
 			{
-				GetPropValue(prop, ptr, BUFFER, BUFFER_SIZE);
-				AddProp(props, prop->GetName(), prop);
+				if (GetPropTypeVersionAdjust(prop->GetType()) == DPT_DataTable)
+				{
+					if (spt_hud_ent_info_recurse.GetBool())
+					{
+						GetAllProps(prop->GetDataTable(),
+						            static_cast<char*>(ptr) + prop->GetOffset(),
+						            props,
+						            prefix + std::string(prop->GetName()) + '.');
+					}
+					else
+					{
+						props.emplace_back(prefix + prop->GetName(),
+						                   "recursive datatable",
+						                   prop);
+					}
+				}
+				else
+				{
+					char buf[256];
+					GetPropValue(prop, ptr, buf, sizeof buf, props);
+					props.emplace_back(prefix + prop->GetName(), buf, prop);
+				}
 			}
 		}
 	}
@@ -115,20 +143,19 @@ namespace utils
 
 		if (ent)
 		{
-			snprintf(BUFFER,
-				BUFFER_SIZE,
-				"(%.3f, %.3f, %.3f)",
-				ent->GetAbsOrigin().x,
-				ent->GetAbsOrigin().y,
-				ent->GetAbsOrigin().z);
-			AddProp(props, "AbsOrigin", nullptr);
-			snprintf(BUFFER,
-				BUFFER_SIZE,
-				"(%.3f, %.3f, %.3f)",
-				ent->GetAbsAngles().x,
-				ent->GetAbsAngles().y,
-				ent->GetAbsAngles().z);
-			AddProp(props, "AbsAngles", nullptr);
+			char buf[256];
+			sprintf_s(buf,
+			          "(%.3f, %.3f, %.3f)",
+			          ent->GetAbsOrigin().x,
+			          ent->GetAbsOrigin().y,
+			          ent->GetAbsOrigin().z);
+			props.emplace_back("AbsOrigin", buf, nullptr);
+			sprintf_s(buf,
+			          "(%.3f, %.3f, %.3f)",
+			          ent->GetAbsAngles().x,
+			          ent->GetAbsAngles().y,
+			          ent->GetAbsAngles().z);
+			props.emplace_back("AbsAngles", buf, nullptr);
 			GetAllProps(ent->GetClientClass()->m_pRecvTable, ent, props);
 		}
 	}

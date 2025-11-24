@@ -28,6 +28,11 @@ ConVar y_spt_hud_ent_info(
     "Display entity info on HUD. Format is \"[ent index],[prop regex],[prop regex],...,[prop regex];[ent index],...,[prop regex]\".\n");
 #endif
 
+ConVar spt_hud_ent_info_recurse("spt_hud_ent_info_recurse",
+                                "0",
+                                FCVAR_DONTRECORD,
+                                "If enabled, spt_hud_ent_info and spt_print_ent_props will recurse into datatables.");
+
 static const int MAX_ENTRIES = 128;
 static const int INFO_BUFFER_SIZE = 256;
 static wchar INFO_ARRAY[MAX_ENTRIES * INFO_BUFFER_SIZE];
@@ -520,7 +525,9 @@ void EntProps::LoadFeature()
 	if (result)
 	{
 		InitConcommandBase(y_spt_hud_ent_info);
+		InitConcommandBase(spt_hud_ent_info_recurse);
 		SptImGui::RegisterHudCvarCallback(y_spt_hud_ent_info, ImGuiEntInfoCvarCallback, true);
+		SptImGui::RegisterHudCvarCheckbox(spt_hud_ent_info_recurse);
 	}
 #endif
 }
