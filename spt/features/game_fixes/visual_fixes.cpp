@@ -7,6 +7,12 @@
 #include "..\visualizations\imgui\imgui_interface.hpp"
 #include "spt\utils\ent_list.hpp"
 
+#ifdef OE
+static void RenderDelayCVarCallback(ConVar* pConVar, const char* pOldValue);
+#else
+static void RenderDelayCVarCallback(IConVar* pConVar, const char* pOldValue, float flOldValue);
+#endif
+
 typedef void(__cdecl* _DoImageSpaceMotionBlur)(void* view, int x, int y, int w, int h);
 typedef void(__fastcall* _CViewEffects__Fade)(void* thisptr, int edx, void* data);
 typedef void(__fastcall* _CViewEffects__Shake)(void* thisptr, int edx, void* data);
@@ -33,10 +39,18 @@ ConVar spt_viewmodel_offset_x("spt_viewmodel_offset_x", "0.0", FCVAR_ARCHIVE, "T
 ConVar spt_viewmodel_offset_y("spt_viewmodel_offset_y", "0.0", FCVAR_ARCHIVE, "The viewmodel offset from default in Y");
 ConVar spt_viewmodel_offset_z("spt_viewmodel_offset_z", "0.0", FCVAR_ARCHIVE, "The viewmodel offset from default in Z");
 
+ConVar spt_disable_render_delay("spt_disable_render_delay",
+                                "0",
+                                0,
+                                "Removes the 0.25s render delay after load.",
+                                RenderDelayCVarCallback);
+
 // Misc visual fixes
 class VisualFixes : public FeatureWrapper<VisualFixes>
 {
 public:
+	void ToggleRenderDelay(bool enabled);
+
 protected:
 	virtual bool ShouldLoadFeature() override;
 
@@ -55,8 +69,11 @@ private:
 	_CViewEffects__Shake ORIG_CViewEffects__Shake = nullptr;
 	_ResetToneMapping ORIG_ResetToneMapping = nullptr;
 	_CAM_ToThirdPerson ORIG_CAM_ToThirdPerson = nullptr;
+	void* ORIG_MiddleOfCL_FullyConnected = nullptr;
 
 	bool* thirdPersonFlag = nullptr;
+
+	DECL_BYTE_REPLACE(renderDelayCmp, 1, 0x00);
 
 	static void __cdecl HOOKED_DoImageSpaceMotionBlur(void* view, int x, int y, int w, int h);
 	static void __fastcall HOOKED_CViewEffects__Fade(void* thisptr, int edx, void* data);
@@ -79,6 +96,15 @@ private:
 };
 
 static VisualFixes spt_visual_fixes;
+
+#ifdef OE
+static void RenderDelayCVarCallback(ConVar* pConVar, const char* pOldValue)
+#else
+static void RenderDelayCVarCallback(IConVar* pConVar, const char* pOldValue, float flOldValue)
+#endif
+{
+	spt_visual_fixes.ToggleRenderDelay(((ConVar*)pConVar)->GetBool());
+}
 
 namespace patterns
 {
@@ -137,6 +163,12 @@ namespace patterns
 	         "83 EC 24 8B 44 24 ?? 8B 50 ?? 56 8B f1 8B 08",
 	         "7122284",
 	         "55 8B EC 83 EC 24 8B 55 ?? 56 57 8B F9");
+	PATTERNS(
+	    MiddleOfCL_FullyConnected,
+	    "5135",
+	    "83 3D ?? ?? ?? ?? 01 75 ?? 8B 0D ?? ?? ?? ?? 8B 11",
+	    "7122284",
+	    "83 3D ?? ?? ?? ?? 01 75 ?? 8B 0D ?? ?? ?? ?? 8B 01 8B 40 ?? FF D0 84 C0 75 ?? F3 0F 10 05 ?? ?? ?? ??");
 } // namespace patterns
 
 void VisualFixes::InitHooks()
@@ -150,6 +182,7 @@ void VisualFixes::InitHooks()
 #endif
 	FIND_PATTERN(client, CAM_ToThirdPerson);
 	HOOK_FUNCTION(client, C_BaseViewModel__CalcViewModelView);
+	FIND_PATTERN(engine, MiddleOfCL_FullyConnected);
 }
 
 bool VisualFixes::ShouldLoadFeature()
@@ -222,12 +255,30 @@ void VisualFixes::LoadFeature()
 		InitConcommandBase(spt_viewmodel_offset_z);
 	}
 
+	if (ORIG_MiddleOfCL_FullyConnected)
+	{
+		/*
+		* The 0.25s render delay is under the condition `if (cl.m_nMaxClients == 1 && !demoplayer->IsPlayingBack())`
+		* 
+		* The instructions for the first condition:
+		* 83 3D ?? ?? ?? ?? 01	CMP dword ptr [cl.m_nMaxClients], 0x1
+		* 75 ??					JNZ [location]
+		* 
+		* We replace the imm8 of the CMP from 1 to 0 (making it `cl.m_nMaxClients == 0`), forcing it to always be false.
+		*/
+
+		auto ptrRenderDelayCmp = (uintptr_t)ORIG_MiddleOfCL_FullyConnected + 6;
+		INIT_BYTE_REPLACE(renderDelayCmp, ptrRenderDelayCmp);
+		InitConcommandBase(spt_disable_render_delay);
+	}
+
 	SptImGuiGroup::QoL_Visual.RegisterUserCallback(
 	    []()
 	    {
 		    SptImGui::CvarCheckbox(y_spt_disable_fade, "##checkbox_fade");
 		    SptImGui::CvarCheckbox(y_spt_disable_shake, "##checkbox_shake");
 		    SptImGui::CvarCheckbox(y_spt_disable_tone_map_reset, "##checkbox_tone_map");
+		    SptImGui::CvarCheckbox(spt_disable_render_delay, "##checkbox_render_delay");
 		    SptImGui::CvarInputTextInteger(y_spt_override_tpose, "T-pose sequence override", "");
 
 		    ConVar* cvars[] = {&spt_viewmodel_offset_x, &spt_viewmodel_offset_y, &spt_viewmodel_offset_z};
@@ -238,7 +289,10 @@ void VisualFixes::LoadFeature()
 	    });
 }
 
-void VisualFixes::UnloadFeature() {}
+void VisualFixes::UnloadFeature()
+{
+	DESTROY_BYTE_REPLACE(renderDelayCmp);
+}
 
 void __cdecl VisualFixes::HOOKED_DoImageSpaceMotionBlur(void* view, int x, int y, int w, int h)
 {
@@ -324,4 +378,16 @@ void VisualFixes::OnFinishRestore(void* thisptr)
 	// I have no idea what this flag is, but setting it unconditionally seems to
 	// (not entirely seamlessly) fix thirdperson not being preserved accross saveloads.
 	*thirdPersonFlag = true;
+}
+
+void VisualFixes::ToggleRenderDelay(bool enabled)
+{
+	if (enabled)
+	{
+		DO_BYTE_REPLACE(renderDelayCmp);
+	}
+	else
+	{
+		UNDO_BYTE_REPLACE(renderDelayCmp);
+	}
 }
