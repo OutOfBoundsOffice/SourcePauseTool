@@ -23,6 +23,8 @@ namespace utils
 		propValue(const char* name, const char* value, RecvProp* prop) : name(name), value(value), prop(prop) {}
 	};
 
+	// may need to adjust for different games since RecvProp::m_RecvType changed between versions
+	SendPropType GetPropTypeVersionAdjust(SendPropType original);
 	void GetAllProps(RecvTable* table, void* ptr, std::vector<propValue>& props);
 	void PrintAllProps(int index);
 	Vector GetPlayerEyePosition();
