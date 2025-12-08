@@ -136,8 +136,9 @@ namespace ipc
 		int i;
 		float f;
 		Vector v;
+		Vector2D v2;
 
-		switch (prop->m_RecvType)
+		switch (utils::GetPropTypeVersionAdjust(prop->m_RecvType))
 		{
 		case DPT_Int:
 			i = *reinterpret_cast<int*>(value);
@@ -153,9 +154,14 @@ namespace ipc
 			msg[FormatTempString("%s[1]", prop->GetName())] = v[1];
 			msg[FormatTempString("%s[2]", prop->GetName())] = v[2];
 			break;
-#ifdef SSDK2007
+#ifndef OE
+		case DPT_VectorXY:
+			v2 = *reinterpret_cast<Vector2D*>(value);
+			msg[FormatTempString("%s[0]", prop->GetName())] = v2[0];
+			msg[FormatTempString("%s[1]", prop->GetName())] = v2[1];
+			break;
 		case DPT_String:
-			msg[prop->GetName()] = *reinterpret_cast<const char**>(value);
+			msg[prop->GetName()] = reinterpret_cast<const char*>(value);
 			break;
 #endif
 		default:
