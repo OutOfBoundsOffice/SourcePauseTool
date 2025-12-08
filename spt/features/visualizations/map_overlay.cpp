@@ -385,7 +385,7 @@ void MapOverlay::ImGuiCallback()
 	ConCommand& cmd = spt_draw_map_overlay_command;
 	const char* cmdName = WrangleLegacyCommandName(cmd.GetName(), true, nullptr);
 
-	if (ImGui::Button("Clear"))
+	if (ImGui::Button(ICON_CI_TRASH " Clear"))
 	{
 		ClearMeshes();
 		errTip.StopShowing();
@@ -397,7 +397,7 @@ void MapOverlay::ImGuiCallback()
 	}
 
 	ImGui::SameLine();
-	if (ImGui::Button("Draw map"))
+	if (ImGui::Button(ICON_CI_CHECK_ALL " Draw map"))
 	{
 		if (LoadMapFile(acPersist.textInput, ztest, &errTip.text))
 			errTip.StopShowing();

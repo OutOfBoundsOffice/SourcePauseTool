@@ -14,6 +14,8 @@
 #include "thirdparty/imgui/imgui_internal.h"
 #include "thirdparty/imgui/imgui_impl_dx9.h"
 #include "thirdparty/imgui/imgui_impl_win32.h"
+#include "thirdparty/fonts/jetbrains_mono_bold/jetbrains_mono_bold.hpp"
+#include "thirdparty/fonts/codicon/codicon.hpp"
 #include "thirdparty/flatbuffers/base.h"
 
 #include "thirdparty/x86.h"
@@ -24,7 +26,6 @@
 #include "d3d9helper.h"
 
 #include "imgui_interface.hpp"
-#include "jetbrains_mono_bold.hpp"
 #include "imgui_styles.hpp"
 
 #define VPROF_BUDGETGROUP_IMGUI _T("SPT_ImGui")
@@ -86,6 +87,16 @@ private:
 	inline static std::atomic<bool> reloadImguiStyle = false;
 	inline static std::atomic<bool> inImGuiUpdateSection = false;
 	inline static std::pair<std::string, std::function<void()>> imguiStyle;
+
+	// adjustments for the icon font
+	struct
+	{
+		ImVec2 glyphOffset{0.f, .2f};
+		bool scaleGlyphOffsetByFontSize = true;
+		float glyphAdvance = 1.01f;
+		bool scaleGlyphAdvanceByFontSize = true;
+		float fontScale = 0.9f;
+	} inline static iconFontConfig;
 
 	inline static const int defaultFontSize = 18;
 	inline static const int minFontSize = 8;
@@ -189,7 +200,7 @@ private:
 			{
 				if (ImGui::BeginMenu("Menu"))
 				{
-					ImGui::MenuItem("About SPT", NULL, &showAboutWindow);
+					ImGui::MenuItem(ICON_CI_INFO " About SPT", NULL, &showAboutWindow);
 					ImGui::EndMenu();
 				}
 				ImGui::EndMenuBar();
@@ -203,14 +214,23 @@ private:
 	{
 		if (!showAboutWindow)
 			return;
-		if (ImGui::Begin("About SPT", &showAboutWindow, ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::Begin("SPT Info", &showAboutWindow, ImGuiWindowFlags_AlwaysAutoResize))
 		{
-			bool copyToClipboard = ImGui::Button("Copy to clipboard");
+			bool copyToClipboard = ImGui::Button(ICON_CI_COPY " Copy to clipboard");
 			if (copyToClipboard)
 			{
 				ImGui::LogToClipboard();
 				ImGui::LogText("```\n");
 			}
+
+			// add github icon & log link text (since textlinkopenurl doesn't)
+#define ABOUT_WINDOW_GITHUB(uniqueIdSuffix, link) \
+	do \
+	{ \
+		ImGui::TextLinkOpenURL(ICON_CI_GITHUB " Github##" uniqueIdSuffix, link); \
+		if (copyToClipboard) \
+			ImGui::LogText(": %s", link); \
+	} while (0)
 
 			ImGui::Separator();
 			ImGui::Text("SPT version: %s", SPT_VERSION);
@@ -230,12 +250,12 @@ private:
 #ifdef __clang_version__
 			ImGui::Text("#define __clang_version__ %s", __clang_version__);
 #endif
-			ImGui::TextLinkOpenURL("Github##spt", "https://github.com/OutOfBoundsOffice/SourcePauseTool");
+			ABOUT_WINDOW_GITHUB("spt", "https://github.com/OutOfBoundsOffice/SourcePauseTool");
 			ImGui::TextDisabled("%s", "Copyright (c) 2014-2025 SPT contributors");
 
 			ImGui::Separator();
 			ImGui::Text("SPTlib");
-			ImGui::TextLinkOpenURL("Github##sptlib", "https://github.com/YaLTeR/SPTLib");
+			ABOUT_WINDOW_GITHUB("sptlib", "https://github.com/YaLTeR/SPTLib");
 			ImGui::TextDisabled("%s", "Copyright (c) 2014-2017 Ivan Molodetskikh");
 
 			ImGui::Separator();
@@ -253,7 +273,7 @@ private:
 #else
 			ImGui::TextUnformatted("Viewport branch: false");
 #endif
-			ImGui::TextLinkOpenURL("Github##imgui", "https://github.com/ocornut/imgui");
+			ABOUT_WINDOW_GITHUB("imgui", "https://github.com/ocornut/imgui");
 			ImGui::Text(
 			    "%s",
 			    "To view more version info, check DEV -> ImGui Developer Settings -> Show ImGui example window.\n"
@@ -262,12 +282,12 @@ private:
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("MinHook");
-			ImGui::TextLinkOpenURL("Github##minhook", "https://github.com/TsudaKageyu/minhook");
+			ABOUT_WINDOW_GITHUB("minhook", "https://github.com/TsudaKageyu/minhook");
 			ImGui::TextDisabled("%s", "Copyright (C) 2009-2017 Tsuda Kageyu.");
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("libcurl v" LIBCURL_VERSION " (" LIBCURL_TIMESTAMP ")");
-			ImGui::TextLinkOpenURL("Github##libcurl", "https://github.com/curl/curl");
+			ABOUT_WINDOW_GITHUB("libcurl", "https://github.com/curl/curl");
 			ImGui::TextDisabled("Copyright %s", LIBCURL_COPYRIGHT);
 
 			ImGui::Separator();
@@ -275,12 +295,12 @@ private:
 			            FLATBUFFERS_VERSION_MAJOR,
 			            FLATBUFFERS_VERSION_MINOR,
 			            FLATBUFFERS_VERSION_REVISION);
-			ImGui::TextLinkOpenURL("Github##flatbuffers", "https://github.com/google/flatbuffers");
+			ABOUT_WINDOW_GITHUB("flatbuffers", "https://github.com/google/flatbuffers");
 			ImGui::TextDisabled("%s", "Copyright (c) Google");
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("XZ Utils v" LZMA_VERSION_STRING);
-			ImGui::TextLinkOpenURL("Github##xz-utils", "https://github.com/tukaani-project/xz");
+			ABOUT_WINDOW_GITHUB("xz-utils", "https://github.com/tukaani-project/xz");
 			ImGui::TextDisabled("%s", "Copyright (C) The XZ Utils authors and contributors");
 
 			ImGui::Separator();
@@ -288,28 +308,28 @@ private:
 			            NLOHMANN_JSON_VERSION_MAJOR,
 			            NLOHMANN_JSON_VERSION_MINOR,
 			            NLOHMANN_JSON_VERSION_PATCH);
-			ImGui::TextLinkOpenURL("Github##nlohmann", "https://github.com/nlohmann/json");
+			ABOUT_WINDOW_GITHUB("nlohmann", "https://github.com/nlohmann/json");
 			ImGui::TextDisabled("Copyright (c) 2013-2019 Niels Lohmann");
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("x86 opcode analyzer");
-			ImGui::TextLinkOpenURL("Github##sst-x86", "https://github.com/mikesmiffy128/sst");
+			ABOUT_WINDOW_GITHUB("sst-x86", "https://github.com/mikesmiffy128/sst");
 			ImGui::TextDisabled("%s", "Copyright (c) 2022 Michael Smith <mikesmiffy128@gmail.com>");
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("Fast delegate/slots implementation");
-			ImGui::TextLinkOpenURL("Github##signals", "https://github.com/pbhogan/Signals");
+			ABOUT_WINDOW_GITHUB("signals", "https://github.com/pbhogan/Signals");
 			ImGui::TextDisabled("%s", "Don Clugston, Mar 2004.");
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("md5 hash");
-			ImGui::TextLinkOpenURL("Github##md5", "https://github.com/yaoyao-cn/md5");
+			ABOUT_WINDOW_GITHUB("md5", "https://github.com/yaoyao-cn/md5");
 			ImGui::TextDisabled(
 			    "%s", "Copyright (c) 1991-2, RSA Data Security, Inc. Created 1991. All rights reserved.");
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("KMP searching algorithm");
-			ImGui::TextLinkOpenURL("Github##kmp", "https://github.com/santazhang/kmp-cpp");
+			ABOUT_WINDOW_GITHUB("kmp", "https://github.com/santazhang/kmp-cpp");
 			ImGui::TextDisabled("%s", "Santa Zhang (santa1987@gmail.com)");
 
 			if (copyToClipboard)
@@ -346,6 +366,69 @@ private:
 		                     "I only made the colors work with the default theme.");
 		ImGui::EndDisabled();
 		ImGui::Checkbox("Show ImGui example window", &showExampleWindow);
+
+		if (ImGui::TreeNode("Debug icon font"))
+		{
+			// clang-format off
+			if (ImGui::SliderFloat("Icon glyph advance", &iconFontConfig.glyphAdvance, 0.f, 10.f))
+				reloadFontSize.store(true, std::memory_order_release);
+			if (ImGui::Checkbox("Scale glyph advance by font size", &iconFontConfig.scaleGlyphAdvanceByFontSize))
+				reloadFontSize.store(true, std::memory_order_release);
+			if (ImGui::SliderFloat2("Icon glyph offset", (float*)&iconFontConfig.glyphOffset, -10.f, 10.f))
+				reloadFontSize.store(true, std::memory_order_release);
+			if (ImGui::Checkbox("Scaling glyph offset by font size", &iconFontConfig.scaleGlyphOffsetByFontSize))
+				reloadFontSize.store(true, std::memory_order_release);
+			if (ImGui::SliderFloat("Icon font size scale", &iconFontConfig.fontScale, 0.1f, 2.f))
+				reloadFontSize.store(true, std::memory_order_release);
+			// clang-format on
+
+			// make icons two chars wide from the text font
+			const char* sampleText1 = "Hello World in some long(ish) string!";
+			const char* sampleText2 =
+			    "He" ICON_CI_SAVE "o " ICON_CI_PLAY_CIRCLE "rld in s" ICON_CI_ACCOUNT
+			    "e long" ICON_CI_ALERT ICON_CI_ARCHIVE ") str" ICON_CI_ACTIVATE_BREAKPOINTS "g!";
+
+			ImVec2 size1 = ImGui::CalcTextSize(sampleText1);
+			ImVec2 size2 = ImGui::CalcTextSize(sampleText2);
+			ImGui::Text("ImGui::CalcTextSize(\"%s\") -> {%.3f, %.3f}", sampleText1, size1.x, size1.y);
+			ImGui::Text("ImGui::CalcTextSize(\"%s\") -> {%.3f, %.3f}", sampleText2, size2.x, size2.y);
+
+			constexpr int nCols = 4;
+
+			ImGuiTableFlags tableFlags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg
+			                             | ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit;
+
+			ImVec2 outer_size = ImVec2(0.0f, ImGui::GetTextLineHeight() * 20);
+			if (ImGui::BeginTable("icon chars", nCols, tableFlags, outer_size))
+			{
+				ImGuiListClipper clipper;
+				clipper.Begin((int)std::ceil((ICON_MAX_CI - ICON_MIN_CI) / (float)nCols));
+				while (clipper.Step())
+				{
+					for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++)
+					{
+						ImGui::TableNextRow();
+						for (int c = 0; c < nCols; c++)
+						{
+							ImGui::TableSetColumnIndex(c);
+							int codePoint = row * nCols + c + ICON_MIN_CI;
+							if (codePoint > ICON_MAX_CI)
+								continue;
+							char utf8Buf[16] = {0};
+							char* cpBuf = utf8Buf + sprintf(utf8Buf, "0x%X: ", codePoint);
+							// I assume this won't work for other unicode ranges
+							static_assert(ICON_MIN_CI == 0xea60 && ICON_MAX_CI == 0xf101);
+							cpBuf[0] = (char)(0xe0 | codePoint >> 12);
+							cpBuf[1] = (char)(0x80 | ((codePoint >> 6) & 0x3F));
+							cpBuf[2] = (char)(0x80 | (codePoint & 0x3F));
+							ImGui::TextUnformatted(utf8Buf, cpBuf + 3);
+						}
+					}
+				}
+				ImGui::EndTable();
+			}
+			ImGui::TreePop();
+		}
 	}
 
 	static void SettingsTabCallback()
@@ -500,18 +583,57 @@ private:
 
 	static void ReloadFontSize()
 	{
+		// old code to reload font from scratch every time, can prolly be improved
 		int tmpFontSize = fontSize;
 		fontSize = clamp(tmpFontSize, minFontSize, maxFontSize);
 		auto& io = ImGui::GetIO();
 		io.Fonts->Clear();
-		ImFontConfig fontCfg{};
-		strncpy(fontCfg.Name, "JetBrainsMono-Bold.ttf", sizeof fontCfg.Name);
-		io.Fonts->AddFontFromMemoryCompressedTTF(JetBrainsMono_Bold_compressed_data,
-		                                         JetBrainsMono_Bold_compressed_data_size,
-		                                         fontSize,
-		                                         &fontCfg,
-		                                         io.Fonts->GetGlyphRangesDefault());
-		io.Fonts->Build();
+
+		ImFontLoader loader{};
+
+		{
+			ImFontConfig fontCfg{};
+			strncpy(fontCfg.Name, "JetBrainsMono-Bold.ttf", sizeof fontCfg.Name);
+			static ImWchar excludeRanges[] = {ICON_MIN_CI, ICON_MAX_CI, 0};
+			fontCfg.GlyphExcludeRanges = excludeRanges;
+			io.Fonts->AddFontFromMemoryCompressedTTF(JetBrainsMono_Bold_compressed_data,
+			                                         JetBrainsMono_Bold_compressed_data_size,
+			                                         fontSize,
+			                                         &fontCfg);
+		}
+
+		{
+			ImFontConfig fontCfg{};
+			fontCfg.MergeMode = true;
+			static ImWchar excludeRanges[] = {1, 127, 0};
+			fontCfg.GlyphExcludeRanges = excludeRanges;
+			strncpy(fontCfg.Name, "codicon.tff", sizeof fontCfg.Name);
+
+			float iconFontSize = fontSize * iconFontConfig.fontScale;
+
+			//if (iconFontConfig.glyphAdvance <= 0)
+			//	iconFontConfig.glyphAdvance = ImGui::CalcTextSize("AA").x;
+			float advanceX = iconFontConfig.glyphAdvance;
+			if (iconFontConfig.scaleGlyphAdvanceByFontSize)
+				advanceX *= iconFontSize;
+			fontCfg.GlyphMinAdvanceX = advanceX;
+			fontCfg.GlyphMaxAdvanceX = advanceX;
+
+			fontCfg.GlyphOffset = iconFontConfig.glyphOffset;
+			if (iconFontConfig.scaleGlyphOffsetByFontSize)
+			{
+				fontCfg.GlyphOffset.x *= iconFontSize;
+				fontCfg.GlyphOffset.y *= iconFontSize;
+			}
+			io.Fonts->AddFontFromMemoryCompressedTTF(codicon_font_compressed_data,
+			                                         codicon_font_compressed_size,
+			                                         iconFontSize,
+			                                         &fontCfg);
+		}
+
+		// there should only be 1 font (the icon font gets merged)
+		ImGui::PushFont(io.Fonts->Fonts.back(), (float)fontSize);
+
 		recreateDeviceObjects = true;
 		reloadFontSize = false;
 	}

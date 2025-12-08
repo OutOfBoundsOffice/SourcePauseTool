@@ -27,7 +27,9 @@ static void TrShowActiveTick(tr_tick activeTick)
 	}
 	else
 	{
-		ImGui::TextUnformatted("No active trace");
+		ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW,
+		                   "%s",
+		                   ICON_CI_WARNING " No active trace " ICON_CI_WARNING);
 	}
 }
 
@@ -137,7 +139,7 @@ void tr_imgui::EntityTabCallback(tr_tick activeTick)
 	std::ranges::transform(entMap, sortedEnts.begin(), std::identity{});
 	std::ranges::sort(sortedEnts, std::less{}, [](auto& p) { return p.first->handle.GetEntryIndex(); });
 
-	ImGui::TextUnformatted("Filter:");
+	ImGui::TextUnformatted(ICON_CI_FILTER " Filter:");
 	ImGui::SameLine();
 
 	static ImGuiTextFilter filter;

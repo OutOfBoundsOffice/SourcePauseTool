@@ -156,7 +156,7 @@ void DrawLine::ImGuiCallback()
 	action = ACT_NONE;
 	actionIdx = -1;
 
-	if (ImGui::Button("Clear"))
+	if (ImGui::Button(ICON_CI_TRASH " Clear"))
 	{
 		lines.clear();
 		focusIdx = -1;
@@ -165,10 +165,10 @@ void DrawLine::ImGuiCallback()
 	int importType = 0;
 	ImGui::Text("Import from clipboard:");
 	ImGui::SameLine();
-	if (ImGui::Button("Replace"))
+	if (ImGui::Button(ICON_CI_REDO " Replace"))
 		importType = 1;
 	ImGui::SameLine();
-	if (ImGui::Button("Append"))
+	if (ImGui::Button(ICON_CI_MERGE " Append"))
 		importType = 2;
 	if (importType)
 	{
@@ -230,7 +230,7 @@ void DrawLine::ImGuiCallback()
 		}
 	}
 	errTip.Show(SPT_IMGUI_WARN_COLOR_YELLOW, 2.0);
-	if (ImGui::Button("Export to clipboard"))
+	if (ImGui::Button(ICON_CI_COPY " Copy to clipboard"))
 	{
 		ImGui::LogToClipboard();
 		const char* cmdName = WrangleLegacyCommandName(spt_draw_line_command.GetName(), true, nullptr);
@@ -275,7 +275,7 @@ void DrawLine::ImGuiCallback()
 	* There may be a better way to layout all of these elements than the group crap I threw
 	* together... that'll be for another day :).
 	*/
-	if (drawChildWnd && ImGui::BeginChild("##lines", {0, 0}, ImGuiChildFlags_Border | ImGuiChildFlags_AutoResizeY))
+	if (drawChildWnd && ImGui::BeginChild("##lines", {0, 0}, ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY))
 	{
 		ImGuiListClipper clipper;
 		clipper.Begin(lines.size());
@@ -322,14 +322,14 @@ void DrawLine::ImGuiCallback()
 					recompute = true;
 				}
 
-				if (ImGui::SmallButton("+"))
+				if (SptImGui::SmallIconButton(ICON_CI_INDENT))
 				{
 					action = ACT_COPY;
 					actionIdx = i;
 				}
 				ImGui::SetItemTooltip("copy this line");
 				ImGui::SameLine();
-				if (ImGui::SmallButton("-"))
+				if (SptImGui::SmallIconButton(ICON_CI_TRASH))
 				{
 					action = ACT_DELETE;
 					actionIdx = i;
@@ -354,7 +354,7 @@ void DrawLine::ImGuiCallback()
 
 	ImGui::Text("%u line%s total", lines.size(), lines.size() == 1 ? "" : "s");
 	ImGui::SameLine();
-	if (ImGui::SmallButton("+"))
+	if (SptImGui::SmallIconButton(ICON_CI_PLUS))
 		action = ACT_APPEND;
 	ImGui::SetItemTooltip("append a new line");
 }
