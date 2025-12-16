@@ -207,7 +207,7 @@ function(add_engine_branch dllName sdkDir engineBranchDefines)
 
 	target_compile_definitions(${dllName} PRIVATE
 		${engineBranchDefines}
-		TARGET_NAME="${dllname}.dll"
+		TARGET_NAME="${dllName}.dll"
 		_CRT_SECURE_NO_DEPRECATE
 		_CRT_NONSTDC_NO_DEPRECATE
 	)
