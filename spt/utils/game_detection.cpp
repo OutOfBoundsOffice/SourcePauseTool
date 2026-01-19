@@ -237,7 +237,6 @@ namespace utils
 		build_num -= 35739;
 		return build_num;
 	}
-#ifndef SSDK2013
 	void StartBuildNumberSearch()
 	{
 		BuildResult = std::async(
@@ -270,70 +269,48 @@ namespace utils
 					    const char* date_str = wholeString + 20;
 					    build_num = DateToBuildNumber(date_str);
 				    }
-				    else
+
+					if (match < 0 || build_num < 0)
 				    {
-					    Warning(
-					        "Was unable to find date string! Build information not available\n");
+#ifdef SSDK2013
+					    Warning("Was unable to find date string! Trying fallback via version command...\n");
+
+						ConCommand_guts* versionCommand =
+					        reinterpret_cast<ConCommand_guts*>(g_pCVar->FindCommand("version"));
+					    int build_num = -1;
+
+					    if (versionCommand)
+					    {
+						    uint8_t* buildNumPtrPtr =
+						        reinterpret_cast<uint8_t*>(versionCommand->m_fnCommandCallback)
+						        + 3;
+
+						    if (buildNumPtrPtr >= moduleStart && buildNumPtrPtr <= moduleEnd)
+						    {
+							    uint8_t* buildNumPtr =
+							        *reinterpret_cast<uint8_t**>(buildNumPtrPtr);
+
+							    if (buildNumPtr >= moduleStart && buildNumPtr <= moduleEnd)
+							    {
+								    build_num = *reinterpret_cast<int*>(buildNumPtr);
+							    }
+						    }
+					    }
+						if (build_num >= 0)
+						{
+							return build_num;
+						}
+#else
+					    Warning("Was unable to find date string for build number!\n");
+#endif
+					    Warning("Build information not available\n");
 				    }
 			    }
 
 			    return build_num;
 		    });
 	}
-#else
-	int GetBuildNumberViaVersionCommand(uint8_t* moduleStart, uint8_t* moduleEnd)
-	{
-		ConCommand_guts* versionCommand = reinterpret_cast<ConCommand_guts*>(g_pCVar->FindCommand("version"));
-		int build_num = -1;
 
-		if (versionCommand)
-		{
-			uint8_t* buildNumPtrPtr = reinterpret_cast<uint8_t*>(versionCommand->m_fnCommandCallback) + 3;
-
-			if (buildNumPtrPtr >= moduleStart && buildNumPtrPtr <= moduleEnd)
-			{
-				uint8_t* buildNumPtr = *reinterpret_cast<uint8_t**>(buildNumPtrPtr);
-
-				if (buildNumPtr >= moduleStart && buildNumPtr <= moduleEnd)
-				{
-					build_num = *reinterpret_cast<int*>(buildNumPtr);
-				}
-			}
-		}
-
-		if (build_num == -1)
-		{
-			Warning("Build information not available!\n");
-		}
-
-		return build_num;
-	}
-
-	void StartBuildNumberSearch()
-	{
-		BuildResult = std::async(std::launch::async,
-		                         []()
-		                         {
-			                         void* handle;
-			                         uint8_t* moduleStart;
-			                         uint8_t* moduleEnd;
-			                         size_t moduleSize;
-			                         int build_num = -1;
-
-			                         if (MemUtils::GetModuleInfo(L"engine.dll",
-			                                                     &handle,
-			                                                     reinterpret_cast<void**>(&moduleStart),
-			                                                     &moduleSize))
-			                         {
-				                         moduleEnd = moduleStart + moduleSize;
-				                         build_num =
-				                             GetBuildNumberViaVersionCommand(moduleStart, moduleEnd);
-			                         }
-
-			                         return build_num;
-		                         });
-	}
-#endif
 
 	bool DataInModule(void* ptr, size_t nBytes, void* modBase, size_t modSize)
 	{
