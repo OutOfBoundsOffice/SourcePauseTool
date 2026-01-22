@@ -265,7 +265,7 @@ namespace utils
 				    {
 					    const char* wholeString =
 					        reinterpret_cast<const char*>(moduleStart) + match;
-					    DevMsg("Found date string: %s\n", wholeString);
+					    DevMsg("SPT: Found date string: %s\n", wholeString);
 					    const char* date_str = wholeString + 20;
 					    build_num = DateToBuildNumber(date_str);
 				    }
@@ -273,7 +273,7 @@ namespace utils
 					if (match < 0 || build_num < 0)
 				    {
 #ifdef SSDK2013
-					    Warning("Was unable to find date string! Trying fallback via version command...\n");
+					    DevWarning("SPT: Was unable to find date string! Trying fallback via version command...\n");
 
 						ConCommand_guts* versionCommand =
 					        reinterpret_cast<ConCommand_guts*>(g_pCVar->FindCommand("version"));
@@ -301,9 +301,9 @@ namespace utils
 							return build_num;
 						}
 #else
-					    Warning("Was unable to find date string for build number!\n");
+					    Warning("SPT: Was unable to find date string for build number!\n");
 #endif
-					    Warning("Build information not available\n");
+					    Warning("SPT: Build information not available\n");
 				    }
 			    }
 
