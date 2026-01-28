@@ -122,16 +122,17 @@ void DemoJumpJitterFixFeature::Toggle(bool enabled)
 		Warning("The demo jitter jump fix isn't functional at the moment.\n");
 	}
 
+	Msg("Please restart the current map or reload a save or replay the demo for the change to take effect.\n");
+
 	if (enabled)
 	{
 		DO_BYTE_REPLACE(InterpTypePush);
+		Warning("REMEMBER TO TURN THIS OFF FOR NORMAL GAMEPLAY!\n");
 	}
 	else
 	{
 		UNDO_BYTE_REPLACE(InterpTypePush);
 	}
-
-	Msg("Please restart the current map or reload a save or replay the demo for the change to take effect.\n");
 }
 
 void DemoJumpJitterFixCvarCallback(CON_COMMAND_CALLBACK_ARGS)
