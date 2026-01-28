@@ -110,6 +110,7 @@ set(SPT_SOURCES
 	spt/features/game_fixes/snapshot_overflow.cpp
 	spt/features/game_fixes/vag_crash.cpp
 	spt/features/game_fixes/visual_fixes.cpp
+	spt/features/game_fixes/demo_jump_jitter.cpp
 	spt/features/visualizations/draw_ent_collides.cpp
 	spt/features/visualizations/draw_line.cpp
 	spt/features/visualizations/draw_seams.cpp
