@@ -10,7 +10,7 @@
 
 static void DemoJumpJitterFixCvarCallback(CON_COMMAND_CALLBACK_ARGS);
 
-ConVar y_spt_demo_jump_jitter_fix("y_spt_demo_jump_jitter_fix",
+ConVar spt_demo_jump_jitter_fix("spt_demo_jump_jitter_fix",
 								  "0",
 								  0,
 								  "Disables all extra movement on flashlight.",
@@ -105,7 +105,7 @@ void DemoJumpJitterFixFeature::LoadFeature()
 			{
 				DevMsg("Found C_BasePlayer::m_iv_vecViewOffset AddVar() type argument push at %p\n", addr);
 				INIT_BYTE_REPLACE(InterpTypePush, (uintptr_t)(addr + offset));
-				InitConcommandBase(y_spt_demo_jump_jitter_fix);
+				InitConcommandBase(spt_demo_jump_jitter_fix);
 				return;
 			}
 		}
