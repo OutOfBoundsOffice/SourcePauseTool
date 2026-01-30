@@ -17,6 +17,7 @@
 #include "thirdparty/fonts/jetbrains_mono_bold/jetbrains_mono_bold.hpp"
 #include "thirdparty/fonts/codicon/codicon.hpp"
 #include "thirdparty/flatbuffers/base.h"
+#include "monocle_config.hpp"
 
 #include "thirdparty/x86.h"
 #include "thirdparty/json_spt_include.hpp"
@@ -80,7 +81,11 @@ public:
 private:
 	inline static HWND gameWnd = nullptr;
 	inline static WNDPROC origWndProc = nullptr;
+
+public:
 	inline static IDirect3DDevice9* dx9Device = nullptr;
+
+private:
 	inline static std::atomic<int> fontSize;
 	inline static std::atomic<bool> recreateDeviceObjects = false;
 	inline static std::atomic<bool> reloadFontSize = false;
@@ -315,6 +320,11 @@ private:
 			ImGui::TextUnformatted("x86 opcode analyzer");
 			ABOUT_WINDOW_GITHUB("sst-x86", "https://github.com/mikesmiffy128/sst");
 			ImGui::TextDisabled("%s", "Copyright (c) 2022 Michael Smith <mikesmiffy128@gmail.com>");
+
+			ImGui::Separator();
+			ImGui::Text("Monocle v%d.%d", MON_LIB_VERSION_MAJOR, MON_LIB_VERSION_MINOR);
+			ABOUT_WINDOW_GITHUB("monocle", "https://github.com/UncraftedName/Monocle");
+			ImGui::TextDisabled("Copyright (c) 2024 UncraftedName");
 
 			ImGui::Separator();
 			ImGui::TextUnformatted("Fast delegate/slots implementation");
@@ -1172,6 +1182,11 @@ namespace SptImGuiGroup
 bool SptImGui::Loaded()
 {
 	return SptImGuiFeature::Loaded();
+}
+
+IDirect3DDevice9* SptImGui::GetDx9Device()
+{
+	return Loaded() ? SptImGuiFeature::dx9Device : nullptr;
 }
 
 bool SptImGui::RegisterWindowCallback(const SptImGuiWindowCallback& cb)

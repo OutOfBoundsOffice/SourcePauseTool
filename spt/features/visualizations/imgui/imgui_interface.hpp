@@ -9,6 +9,7 @@
 class SptImGuiFeature;
 class SptImGui;
 struct ImGuiWindow;
+struct IDirect3DDevice9;
 
 #define SPT_IMGUI_WARN_COLOR_YELLOW (ImVec4{.8f, .5f, .1f, 1})
 #define SPT_IMGUI_WARN_COLOR_RED (ImVec4{.9f, .05f, .05f, 1})
@@ -183,6 +184,7 @@ namespace SptImGuiGroup
 	inline Section Draw_PpPlacement_Gun{"Gun portal placement", &Draw_PpPlacement};
 	inline Section Draw_PpPlacement_Grid{"Portal placement grid", &Draw_PpPlacement};
 	inline Tab Draw_VagTrace{"VAG trace", &Draw};
+	inline Tab Draw_Monocle{"VAG test", &Draw};
 	inline Tab Draw_Lines{"Draw lines", &Draw};
 	inline Tab Draw_Misc{"Misc.", &Draw};
 	inline Section Draw_Misc_OobEnts{"OOB entities", &Draw_Misc};
@@ -250,6 +252,7 @@ class SptImGui
 public:
 	// true if the imgui feature works and is loaded
 	static bool Loaded();
+	static IDirect3DDevice9* GetDx9Device();
 	/*
 	* Use this if you want a separate window for your feature, it returns true if the internal
 	* feature is loaded.

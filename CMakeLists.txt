@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
+include(FetchContent)
+
 project(SPT LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-add_compile_options(/MP)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
 
@@ -28,6 +29,7 @@ FILE(GLOB_RECURSE SPTLIB_SOURCES
 
 add_library(SPTLib STATIC ${SPTLIB_SOURCES})
 target_include_directories(SPTLib PUBLIC SPTLib SPTLib/Windows/minhook/include)
+target_compile_options(SPTLib PUBLIC /MP)
 
 add_library(mathlib STATIC IMPORTED)
 set_target_properties(mathlib PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/SDK/orangebox_new/lib/mathlib.lib")
@@ -131,6 +133,8 @@ set(SPT_SOURCES
 	spt/features/visualizations/fcps/fcps_record.cpp
 	spt/features/visualizations/imgui/imgui_interface.cpp
 	spt/features/visualizations/imgui/spt_imgui_widgets.cpp
+	spt/features/visualizations/monocle/mon_imgui.cpp
+	spt/features/visualizations/monocle/mon_worker.cpp
 	spt/features/visualizations/player_trace/tr_collect.cpp
 	spt/features/visualizations/player_trace/tr_entity_cache.cpp
 	spt/features/visualizations/player_trace/tr_feature.cpp
@@ -189,6 +193,14 @@ set(SPT_SOURCES
 	thirdparty/x86.c
 )
 
+FetchContent_Declare(
+	monocle
+	GIT_REPOSITORY https://github.com/UncraftedName/Monocle
+	GIT_TAG        55c19437df71b47e21db65c04e1808f861c44cfe
+)
+
+FetchContent_MakeAvailable(monocle)
+
 function(add_engine_branch dllName sdkDir engineBranchDefines)
 	# SDK lib
 	set(sdk_target ${dllName}_sdk)
@@ -219,8 +231,10 @@ function(add_engine_branch dllName sdkDir engineBranchDefines)
 		${CMAKE_SOURCE_DIR}/spt
 		${CMAKE_SOURCE_DIR}/spt/utils
 		${CMAKE_SOURCE_DIR}/thirdparty
+		${monocle_SOURCE_DIR}
 	)
-	target_compile_options(${dllName} PRIVATE /W4 /wd4471)
+	target_compile_options(${dllName} PRIVATE /W4 /wd4471 /MP)
+	target_link_options(${dllName} PUBLIC /SAFESEH:NO)
 	target_link_libraries(${dllName} PUBLIC
 		curl
 		Dbghelp
@@ -231,6 +245,7 @@ function(add_engine_branch dllName sdkDir engineBranchDefines)
 		xz
 		ws2_32
 		${sdk_target}
+		monocle_lib
 	)
 endfunction()
 
