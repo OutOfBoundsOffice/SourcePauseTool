@@ -51,7 +51,7 @@ public:
 
 bool SptImGui::SmallIconButton(const char* label)
 {
-	ImGui::PushStyleVarX(ImGuiStyleVar_FramePadding, 0.f);	
+	ImGui::PushStyleVarX(ImGuiStyleVar_FramePadding, 0.f);
 	bool ret = ImGui::SmallButton(label);
 	ImGui::PopStyleVar();
 	return ret;
@@ -598,7 +598,8 @@ void SptImGui::TextInputAutocomplete(const char* inputTextLabel,
 const utils::PortalInfo* SptImGui::PortalSelectionWidget(PortalSelectionPersist& persist, int getPortalFlags)
 {
 	ImGui::BeginGroup();
-	ImGui::Checkbox("Show high precision position/angles##portal_select", &persist.enableHighPrecision);
+	if (persist.showHighPrecisionOpt)
+		ImGui::Checkbox("Show high precision position/angles##portal_select", &persist.enableHighPrecision);
 
 	const utils::PortalInfo* selectedPortal = nullptr;
 	persist.userSelectedPortalByIndexLastCall = false;
@@ -716,14 +717,8 @@ const utils::PortalInfo* SptImGui::PortalSelectionWidget(PortalSelectionPersist&
 	return selectedPortal;
 }
 
-const utils::PortalInfo* SptImGui::PortalSelectionWidgetCvar(ConVar& c,
-                                                             PortalSelectionPersist& persist,
-                                                             int getPortalFlags)
+std::array<char, 16> SptImGui::PortalSelectionTypeCombo(const char* curVal, int getPortalFlags)
 {
-	BeginCmdGroup(c);
-
-	const char* oldCvarVal = c.GetString();
-
 	size_t nOpts = 0;
 	std::array<const char*, 5> opts;
 	if (getPortalFlags & GPF_ALLOW_OVERLAY)
@@ -735,52 +730,83 @@ const utils::PortalInfo* SptImGui::PortalSelectionWidgetCvar(ConVar& c,
 	opts[nOpts++] = "blue";
 	opts[nOpts++] = "orange";
 
-	char previewBuf[32];
-	const char* start = c.GetString();
+	char previewIdxBuf[32];
 	char* end;
-	long idx = strtol(start, &end, 10);
-	if (start == end)
-	{
-		persist.showIndexSelectorTooltip = true;
-	}
-	else
-	{
-		persist.showIndexSelectorTooltip = false;
-		snprintf(previewBuf, sizeof previewBuf, "index: %" PRId32, idx);
-	}
+	long idx = strtol(curVal, &end, 10);
+	bool isIdxType = curVal != end;
+	if (isIdxType)
+		sprintf_s(previewIdxBuf, "index: %" PRId32, idx);
 
-	if (ImGui::BeginCombo("Portal type",
-	                      persist.showIndexSelectorTooltip ? oldCvarVal : previewBuf,
-	                      ImGuiComboFlags_WidthFitPreview))
+	std::array<char, 16> ret;
+	ret[0] = '\0';
+
+	if (ImGui::BeginCombo("Portal type", isIdxType ? previewIdxBuf : curVal, ImGuiComboFlags_WidthFitPreview))
 	{
 		for (size_t i = 0; i < nOpts; i++)
 		{
-			const bool is_selected = !stricmp(opts[i], oldCvarVal);
+			const bool is_selected = !stricmp(opts[i], curVal);
 			if (ImGui::Selectable(opts[i], is_selected))
-				c.SetValue(opts[i]);
+				strcpy_s(ret.data(), ret.size(), opts[i]);
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();
 		}
 		ImGui::EndCombo();
 	}
-	ImGui::SameLine();
-	CvarValue(c);
 
-	const utils::PortalInfo* selectedPortal = getPortal(c.GetString(), getPortalFlags);
+	return ret;
+}
+
+const utils::PortalInfo* SptImGui::PortalSelectionWidgetFromString(const char* curVal,
+                                                                   PortalSelectionPersist& persist,
+                                                                   int getPortalFlags)
+{
+	char* end;
+	(void)strtol(curVal, &end, 10);
+	persist.showIndexSelectorTooltip = curVal == end;
+
+	const utils::PortalInfo* selectedPortal = getPortal(curVal, getPortalFlags);
 	if (selectedPortal)
 		persist.selectedPortalIdx = selectedPortal->handle.GetEntryIndex();
 	else
 		persist.selectedPortalIdx = -1;
 
-	selectedPortal = PortalSelectionWidget(persist, getPortalFlags);
-	if (persist.userSelectedPortalByIndexLastCall)
+	return PortalSelectionWidget(persist, getPortalFlags);
+}
+
+const utils::PortalInfo* SptImGui::PortalSelectionWidgetCvar(ConVar& c,
+                                                             PortalSelectionPersist& persist,
+                                                             int getPortalFlags)
+{
+	BeginCmdGroup(c);
+
+	const char* curVal = c.GetString();
+
+	auto newSelectType = PortalSelectionTypeCombo(curVal, getPortalFlags);
+	if (newSelectType[0])
 	{
-		Assert(selectedPortal);
-		c.SetValue(selectedPortal->handle.GetEntryIndex());
+		c.SetValue(newSelectType.data());
+		curVal = newSelectType.data();
 	}
+	ImGui::SameLine();
+	CvarValue(c);
+
+	const utils::PortalInfo* selectedPortal = PortalSelectionWidgetFromString(curVal, persist, getPortalFlags);
+	if (selectedPortal && persist.userSelectedPortalByIndexLastCall)
+		c.SetValue(selectedPortal->handle.GetEntryIndex());
 
 	EndCmdGroup();
 	return selectedPortal;
+}
+
+bool SptImGui::ColorEdit4(const char* label, color32& c, ImGuiColorEditFlags flags)
+{
+	ImVec4 colf = ImGui::ColorConvertU32ToFloat4(Color32ToImU32(c));
+	if (ImGui::ColorEdit4(label, (float*)&colf, flags))
+	{
+		c = ImU32ToColor32(ImGui::ColorConvertFloat4ToU32(colf));
+		return true;
+	}
+	return false;
 }
 
 #endif

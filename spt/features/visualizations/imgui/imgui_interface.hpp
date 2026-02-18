@@ -422,22 +422,33 @@ public:
 
 	struct PortalSelectionPersist
 	{
-		int selectedPortalIdx = -1; // [in/out] public
-		bool enableHighPrecision = false;
-		bool showIndexSelectorTooltip = false;          // [in] public
+		int selectedPortalIdx = -1;                     // [in/out] public
+		bool enableHighPrecision = false;               // [user selected, in/out] public
+		bool showHighPrecisionOpt = true;               // [in] public
+		bool showIndexSelectorTooltip = false;          // [in] internal
 		bool userSelectedPortalByIndexLastCall = false; // [out] public
 	};
 
-	// Creates a table of portals for the user to select from. create a static
+	// Creates a table of portals for the user to select from. Create a static
 	// PortalSelectionPersist and pass it in here every time you call this widget.
 	static const utils::PortalInfo* PortalSelectionWidget(PortalSelectionPersist& persist, int getPortalFlags);
 
-	// For cvars which accept "blue"/"orange"/"auto" etc. Use the same flags as for getPortal.
+	// select "blue"/"orange"/"auto"/etc, returns new value if changed (otherwise first returned char is 0)
+	static std::array<char, 16> PortalSelectionTypeCombo(const char* curVal, int getPortalFlags);
+
+	// takes in "blue"/"orange"/"auto"/"<index>"/etc, and returns selected portal
+	static const utils::PortalInfo* PortalSelectionWidgetFromString(const char* curVal,
+	                                                                PortalSelectionPersist& persist,
+	                                                                int getPortalFlags);
+
+	// For cvars which accept "blue"/"orange"/"auto"/"<index>" etc. Use the same flags as for getPortal.
 	static const utils::PortalInfo* PortalSelectionWidgetCvar(ConVar& c,
 	                                                          PortalSelectionPersist& persist,
 	                                                          int getPortalFlags);
 
 #endif
+
+	static bool ColorEdit4(const char* label, color32& c, ImGuiColorEditFlags flags = 0);
 
 	/*
 	* Useful for short timed error messages, e.g. user pressed a button but something failed
