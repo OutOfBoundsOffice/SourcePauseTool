@@ -100,7 +100,6 @@ set(SPT_SOURCES
 	spt/features/timer.cpp
 	spt/features/tracing.cpp
 	spt/features/updater.cpp
-	spt/features/vag_searcher.cpp
 	spt/features/game_fixes/bms_flashlight_fix.cpp
 	spt/features/game_fixes/caption_fix.cpp
 	spt/features/game_fixes/fastload.cpp
