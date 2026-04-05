@@ -332,46 +332,52 @@ void MonocleFeature::DrawWorkerImage(const char* label, MonocleWorker& wd)
 		hoveredPxl.DrawInfo();
 		ImGui::EndGroup();
 
-		ImGui::Text("Click to copy setpos cmd");
+		if (hoveredPxl.params.ent.is_player)
+		{
+			ImGui::Text("Click to copy setpos cmd");
 
-		// warning message
-		static std::string setposWarningMsg;
-		setposWarningMsg.clear();
-		if (!hoveredPxl.result.ent.is_player)
-			setposWarningMsg += "- the simulation was run on a non-player entity\n";
-		auto& combos = imguiPersist.combos;
-		if (!combos.playerCrouched.LastGrabbedMatchesLastUpdate())
-		{
-			setposWarningMsg += combos.playerCrouched.GetLastUpdateVal() ? "- the player is crouched\n"
-			                                                             : "- the player is not crouched\n";
-		}
-		if (!combos.mapOriginEmpty.LastGrabbedMatchesLastUpdate())
-		{
-			setposWarningMsg += combos.mapOriginEmpty.GetLastUpdateVal()
-			                        ? "- the map origin is a passable space\n"
-			                        : "- the map origin is not a passable space\n";
-		}
-		else if (combos.mapOriginEmpty.GetLastUpdateVal())
-		{
-			setposWarningMsg += "- the portal might not teleport you (try going into its portal bubble)\n";
-		}
-		if (!combos.monocleGameVersion.LastGrabbedMatchesLastUpdate())
-			setposWarningMsg += "- the simulation was done with a different game version\n";
-		if (!setposWarningMsg.empty())
-		{
-			ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW,
-			                   ICON_CI_WARNING " the setpos command may not work as expected because:");
-			ImGui::Text("%.*s", setposWarningMsg.size() - 1, setposWarningMsg.c_str());
-		}
+			// warning message
+			static std::string setposWarningMsg;
+			setposWarningMsg.clear();
+			if (!hoveredPxl.result.ent.is_player)
+				setposWarningMsg += "- the simulation was run on a non-player entity\n";
+			auto& combos = imguiPersist.combos;
+			if (!combos.playerCrouched.LastGrabbedMatchesLastUpdate())
+			{
+				setposWarningMsg += combos.playerCrouched.GetLastUpdateVal()
+				                        ? "- the player is crouched\n"
+				                        : "- the player is not crouched\n";
+			}
+			if (!combos.mapOriginEmpty.LastGrabbedMatchesLastUpdate())
+			{
+				setposWarningMsg += combos.mapOriginEmpty.GetLastUpdateVal()
+				                        ? "- the map origin is a passable space\n"
+				                        : "- the map origin is not a passable space\n";
+			}
+			else if (combos.mapOriginEmpty.GetLastUpdateVal())
+			{
+				setposWarningMsg +=
+				    "- the portal might not teleport you (try going into its portal bubble)\n";
+			}
+			if (!combos.monocleGameVersion.LastGrabbedMatchesLastUpdate())
+				setposWarningMsg += "- the simulation was done with a different game version\n";
+			if (!setposWarningMsg.empty())
+			{
+				ImGui::TextColored(SPT_IMGUI_WARN_COLOR_YELLOW,
+				                   ICON_CI_WARNING
+				                   " the setpos command may not work as expected because:");
+				ImGui::Text("%.*s", setposWarningMsg.size() - 1, setposWarningMsg.c_str());
+			}
 
-		if (clicked)
-		{
-			mon::Entity entInFront = hoveredPxl.result.ents[0].WithNewCenter(
-			    hoveredPxl.result.ents[0].GetCenter() + hoveredPxl.params.EntryPortal().f);
-			std::string cmd = std::format("{}; spt_afterticks 5 \"{}\"",
-			                              entInFront.SetPosCmd(),
-			                              hoveredPxl.result.ents[0].SetPosCmd());
-			ImGui::SetClipboardText(cmd.c_str());
+			if (clicked)
+			{
+				mon::Entity entInFront = hoveredPxl.result.ents[0].WithNewCenter(
+				    hoveredPxl.result.ents[0].GetCenter() + hoveredPxl.params.EntryPortal().f);
+				std::string cmd = std::format("{}; spt_afterticks 5 \"{}\"",
+				                              entInFront.SetPosCmd(),
+				                              hoveredPxl.result.ents[0].SetPosCmd());
+				ImGui::SetClipboardText(cmd.c_str());
+			}
 		}
 
 		ImGui::EndTooltip();
