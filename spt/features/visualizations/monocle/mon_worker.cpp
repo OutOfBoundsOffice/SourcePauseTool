@@ -73,6 +73,8 @@ void MonocleWorker::RestartWork(std::shared_ptr<WorkerMonocleData> optNewMonocle
 	requestPause = false;
 	cvWorker.notify_one();
 	SetupTexture();
+	if (monocleData)
+		RecomputeEffectiveTpSpace();
 }
 
 void MonocleWorker::SetupTexture()
@@ -210,6 +212,111 @@ void MonocleWorker::WorkerLoop()
 			img.pxls[y * img.size.x + x] = DoWorkForPixel({x, y}, params, result);
 
 		img.processedRows.store(y + 1, std::memory_order_release);
+	}
+}
+
+void MonocleWorker::RecomputeEffectiveTpSpace()
+{
+	auto& ent = monocleData->paramsTemplate.ent;
+	auto& p = monocleData->paramsTemplate.EntryPortal();
+
+	// first, we build 4 projected (2D) offsets from each corner in the portal's local 3D space (+z is up, +y is left)
+	std::array<Vector2D, 4> cornerOffsetsLocal;
+
+	if (ent.is_player)
+	{
+		/*
+		* The player will always be teleported when their center is on the portal plane. To figure
+		* out the effective teleport space:
+		* - slice the player using the portal plane to create a 2D polygon
+		* - create an AABB of that polygon
+		* - "subtract" that AABB from the portal rectangle
+		*/
+
+		matrix3x4_t portalToWorld;
+		AngleIMatrix(*(QAngle*)&p.ang, *(Vector*)&p.pos, portalToWorld);
+
+		// create an AABB centered at the portal
+		mon::Entity centeredEnt = ent.WithNewCenter(p.pos);
+		mon::Vector mins = centeredEnt.GetWorldMins();
+		mon::Vector maxs = centeredEnt.GetWorldMaxs();
+
+		// get a cross section of the player sliced by the portal plane (world space)
+		std::array<Vector, 10> edgeIntersectionsWorldSpace;
+		size_t intersectionCount = 0;
+
+		auto checkPlaneIntersectLine = [&](const Vector& a, const Vector& b)
+		{
+			const VPlane& portalPlane = *(VPlane*)&p.plane;
+			float aDotN = a.Dot(portalPlane.m_Normal);
+			float bDotN = b.Dot(portalPlane.m_Normal);
+			// t is the fraction at which the line segment a->b intersects the portal plane
+			float t = (portalPlane.m_Dist - aDotN) / (bDotN - aDotN);
+			// because of this epsilon, we may sometimes get false positives and include more edges than necessary (up to 10)
+			if (t >= -0.0001f && t <= 1.0001f)
+				edgeIntersectionsWorldSpace[intersectionCount++] = Lerp(t, a, b);
+		};
+
+		// iterate over all player AABB edges
+
+		// edges from the mins corner
+		checkPlaneIntersectLine(*(Vector*)&mins, {maxs.x, mins.y, mins.z});
+		checkPlaneIntersectLine(*(Vector*)&mins, {mins.x, maxs.y, mins.z});
+		checkPlaneIntersectLine(*(Vector*)&mins, {mins.x, mins.y, maxs.z});
+
+		// the other 9 edges :)
+		for (size_t r = 0; r < 3; r++)
+		{
+			Vector from = *(Vector*)&maxs;
+			from[r] = mins[r];
+			for (size_t flipAx = 0; flipAx < 3; flipAx++)
+			{
+				Vector to = from;
+				to[flipAx] = r == flipAx ? maxs[flipAx] : mins[flipAx];
+				checkPlaneIntersectLine(from, to);
+			}
+		}
+
+		// convert the intersections to a local space AABB (+z is up, +y is left)
+		Vector localMins(666, 666, 666);
+		Vector localMaxs(-666, -666, -666);
+
+		for (size_t i = 0; i < intersectionCount; i++)
+		{
+			Vector intersectionLocal;
+			VectorTransform(edgeIntersectionsWorldSpace[i], portalToWorld, intersectionLocal);
+			VectorMin(intersectionLocal, localMins, localMins);
+			VectorMax(intersectionLocal, localMaxs, localMaxs);
+		}
+
+		cornerOffsetsLocal[0] = {-localMins.y, -localMaxs.z};
+		cornerOffsetsLocal[1] = {-localMaxs.y, -localMaxs.z};
+		cornerOffsetsLocal[2] = {-localMaxs.y, -localMins.z};
+		cornerOffsetsLocal[3] = {-localMins.y, -localMins.z};
+	}
+	else
+	{
+		// ball is easy - fixed distance away from each corner
+		float r = ent.ball.radius;
+		cornerOffsetsLocal = {
+		    Vector2D{r, -r},
+		    Vector2D{-r, -r},
+		    Vector2D{-r, r},
+		    Vector2D{r, r},
+		};
+	}
+
+	// convert the projected corner offsets into pixel space and add to the actual corner position (+x is right, +y is down)
+	for (size_t i = 0; i < img.effectiveTpSpace.size(); i++)
+	{
+		img.effectiveTpSpace[i] = Vector2D{
+		    i == 0 || i == 3 ? 0.5f : img.size.x - 0.5f,
+		    i == 0 || i == 1 ? 0.5f : img.size.y - 0.5f,
+		};
+		img.effectiveTpSpace[i] += Vector2D{
+		    cornerOffsetsLocal[i].x * 0.5f / mon::PORTAL_HALF_WIDTH * img.size.x,
+		    -cornerOffsetsLocal[i].y * 0.5f / mon::PORTAL_HALF_HEIGHT * img.size.y,
+		};
 	}
 }
 

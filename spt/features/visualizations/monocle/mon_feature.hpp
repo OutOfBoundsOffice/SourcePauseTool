@@ -53,7 +53,8 @@ struct d3d9_argb
 	X(MIC_NEG2CUM, d3d9_argb(0, 0, 150, 255)) \
 	X(MIC_3CUM, d3d9_argb(0, 150, 0, 255)) \
 	X(MIC_NEG3CUM, d3d9_argb(0, 0, 50, 255)) \
-	X(MIC_MISC, d3d9_argb(255, 0, 0, 255))
+	X(MIC_MISC, d3d9_argb(255, 0, 0, 255)) \
+	X(MIC_EFFECTIVE_TP_BORDER, d3d9_argb(255, 180, 0, 255))
 
 enum MonocleImageColorType
 {
@@ -170,6 +171,13 @@ private:
 		std::unique_ptr<WorkerPixelData[]> pxls;
 		WorkerPixel size;
 		std::atomic<uint16_t> processedRows = 0;
+
+		/*
+		* A quad in pixel space that represents a set outside of which it is normally not possible
+		* to enter this portal (e.g. the pixel is very close to the portal edge). This data is not
+		* needed by the worker but it's the best place to put it.
+		*/
+		std::array<Vector2D, 4> effectiveTpSpace;
 	} img;
 
 	// the actual texture displayed in imgui
@@ -191,6 +199,11 @@ public:
 	auto& GetMonocleData() const
 	{
 		return monocleData;
+	}
+
+	auto& GetEffectiveTpSpace() const
+	{
+		return img.effectiveTpSpace;
 	}
 
 	void RestartWork(std::shared_ptr<WorkerMonocleData> optNewMonocleData, WorkerPixel newImgSize);
@@ -228,6 +241,7 @@ private:
 	void SetupTexture();
 	void PauseWorker();
 	void WorkerLoop();
+	void RecomputeEffectiveTpSpace();
 };
 
 class MonocleFeature : public FeatureWrapper<MonocleFeature>
@@ -240,6 +254,13 @@ private:
 		int pxlWidth = 20;
 		float zoom = 10.f;
 	} tooltip;
+
+	struct
+	{
+		bool enabled = true;
+		float thickness = 2.f;
+		float tooltipThickness = 2.f;
+	} effectiveTpSpace;
 
 	void DrawWorkerImage(const char* label, MonocleWorker& wd);
 

@@ -5,7 +5,6 @@
 /*
 * TODO future features:
 * - sliders for tooltip size/zoom
-* - toggle for showing where in the portal the player will fit
 * - make a version of the newlocation cmd which doesn't require the player to manually name the portals
 * - compare the monocle portal values to the game to auto-detect which portal is "placed last"
 */
@@ -260,6 +259,17 @@ void MonocleFeature::DrawWorkerImage(const char* label, MonocleWorker& wd)
 	// padding rect
 	dl->AddRect(canvasMin + imgPad2D * .5f, canvasMax - imgPad2D * .5f, borderColor, 0.f, 0, imgPad);
 
+	if (md && effectiveTpSpace.enabled)
+	{
+		auto& pq = wd.GetEffectiveTpSpace();
+		dl->AddQuad(canvasMin + imgPad2D + pq[0],
+		            canvasMin + imgPad2D + pq[1],
+		            canvasMin + imgPad2D + pq[2],
+		            canvasMin + imgPad2D + pq[3],
+		            Color32ToImU32((color32)MonocleImageColors[MIC_EFFECTIVE_TP_BORDER]),
+		            effectiveTpSpace.thickness);
+	}
+
 	ImGui::InvisibleButton(label, canvasMax - canvasMin);
 	bool clicked = ImGui::IsItemClicked(ImGuiMouseButton_Left);
 	bool hovered = ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNone);
@@ -297,14 +307,25 @@ void MonocleFeature::DrawWorkerImage(const char* label, MonocleWorker& wd)
 		dltt->AddImage((ImTextureID)tex.Get(), c0, c1, uvMin, uvMax);
 		dltt->AddCallback(SamplerState::Pop, &ss);
 
-		// manually add the border of the main image to the zoomed tooltip
 		dltt->PushClipRect(c0, c1);
+		// border of the main image
 		dltt->AddRect(c0 + (Vector2D(0, 0) - imgSelectMins - imgPad2D * .5f) * tooltip.zoom,
 		              c0 + (imgSizeVec - imgSelectMins + imgPad2D * .5f) * tooltip.zoom,
 		              borderColor,
 		              0.f,
 		              ImDrawFlags_None,
 		              tooltip.zoom * imgPad);
+		// possible quad
+		if (effectiveTpSpace.enabled)
+		{
+			auto& pq = wd.GetEffectiveTpSpace();
+			dltt->AddQuad(c0 + (pq[0] - imgSelectMins - imgPad2D * .5f) * tooltip.zoom,
+			              c0 + (pq[1] - imgSelectMins - imgPad2D * .5f) * tooltip.zoom,
+			              c0 + (pq[2] - imgSelectMins - imgPad2D * .5f) * tooltip.zoom,
+			              c0 + (pq[3] - imgSelectMins - imgPad2D * .5f) * tooltip.zoom,
+			              Color32ToImU32((color32)MonocleImageColors[MIC_EFFECTIVE_TP_BORDER]),
+			              effectiveTpSpace.tooltipThickness);
+		}
 		dltt->PopClipRect();
 
 		// selection rectangle on hovered pixel
@@ -444,9 +465,19 @@ void MonocleFeature::ImGuiColorEditSettings()
 
 	bool dirty = false;
 
-	// not part of the image so doesn't need to mark dirty
+	// anything not part of the image pixels doesn't need to be marked as dirty
 	colorTypeEdit("Border", MIC_BORDER);
+
+	ImGui::Checkbox("Draw effective teleport space", &effectiveTpSpace.enabled);
+	ImGui::BeginDisabled(!effectiveTpSpace.enabled);
 	ImGui::SameLine();
+	SptImGui::HelpMarker(
+	    "The player is THICC and doesn't fit\n"
+	    "into the portal hole outside of this area.");
+	ImGui::SameLine();
+	colorTypeEdit("color", MIC_EFFECTIVE_TP_BORDER);
+	ImGui::EndDisabled();
+
 	dirty |= colorTypeEdit("Max teleports exceeded", MIC_TP_EXCEEDED);
 
 	dirty |= colorTypeEdit("0 CUM (end in front)", MIC_0CUM_FRONT);
