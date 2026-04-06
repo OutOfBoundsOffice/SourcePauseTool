@@ -375,7 +375,7 @@ namespace patterns
 	         "55 8B EC 83 EC 58 E8 ?? ?? ?? ?? 85 C0 0F 84 ?? ?? ?? ?? 8B 10 8B C8 56");
 	PATTERNS(CInputSystem__PostButtonPressedEvent,
 	         "5135",
-	         "8B D1 0F B6 42 ??",
+	         "8B D1 0F B6 42 ?? 69 C0 ?? ?? ?? ?? 56 57",
 	         "7197370",
 	         "55 8B EC 83 EC 18 53 8B 5D ?? BA 01 00 00 00",
 	         "sdk-base-2013",
