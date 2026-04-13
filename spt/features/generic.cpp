@@ -94,7 +94,9 @@ namespace patterns
 	         "dmomm",
 	         "83 EC 0C 56 8B F1 80 BE ?? ?? ?? ?? 00 57 8B 7C 24 1C 75 ?? 80 7E ?? 00",
 	         "2707",
-	         "83 EC 18 56 8B F1 8A 46 ?? 84 C0 57");
+	         "83 EC 18 56 8B F1 8A 46 ?? 84 C0 57",
+	         "5288",
+	         "55 8B EC 56 8B F1 80 BE ?? ?? ?? ?? 00 57 8B 7D ??");
 	PATTERNS(
 	    CHudDamageIndicator__GetDamagePosition,
 	    "5135",
