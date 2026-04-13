@@ -58,7 +58,8 @@ namespace patterns
 	    "BMS-Retail-3",
 	    "55 8B EC 83 EC 0C 56 8B F1 8B ?? 04 80 ?? ?? ?? 00 00 00 74 0E 8B ?? 08 83 ?? 28 02 32 C0 5E 8B E5 5D C3",
 	    "missinginfo1_6",
-	    "55 8B EC 83 EC 1C 56 8B F1 8B 4E 04 80 B9 ?? ?? ?? ?? ?? 74 0E 8B 76 08 83 4E 28 02 32 C0 5E 8B E5");
+	    "55 8B EC 83 EC ?? 56 8B F1 8B 4E 04 80 B9 ?? ?? ?? ?? ?? 74 ?? 8B ?? 08 83 ?? 28 02 32 C0 5E 8B E5");
+
 	PATTERNS(
 	    FinishGravity,
 	    "bms",
@@ -156,37 +157,24 @@ void AutojumpFeature::LoadFeature()
 		InitConcommandBase(_y_spt_autojump_ensure_legit);
 		JumpSignal.Works = true;
 		int ptnNumber = GetPatternIndex((void**)&ORIG_CheckJumpButton);
-		switch (ptnNumber)
+
+		if (utils::DoesGameLookLikeSteampipe() || 
+			utils::DoesGameLookLikeBMSRetail() || 
+			utils::GetBuildNumber() >= 5135)
 		{
-		case 0:  // 5135
-		case 2:  // 5339
-		case 3:  // 2257546
-		case 4:  // 2257546-hl1
-		case 9:  // 6879
-		case 11: // te120
-		case 12: // BMS-Retail-3
 			off_mv_ptr = 2;
-			break;
-
-		case 1:  // 4104
-		case 5:  // 2707
-		case 6:  // 2949
-		case 8:  // 4044-episodic
-		case 10: // missinginfo1_4_7
-			off_mv_ptr = 1;
-			break;
-
-		case 7: // dmomm
-			off_mv_ptr = 3;
-			break;
-		}
-		if (off_mv_ptr == 1)
-			off_player_ptr = 2;
-		else if (off_mv_ptr == 2)
 			off_player_ptr = 1;
-		else
-			// dmomm
+		}
+		else if (utils::DoesGameLookLikeDMoMM())
+		{
+			off_mv_ptr = 3;
 			off_player_ptr = 4;
+		}
+		else
+		{
+			off_mv_ptr = 1;
+			off_player_ptr = 2;
+		}
 
 		SptImGuiGroup::Cheats_Misc_Jumping.RegisterUserCallback(
 		    []()
