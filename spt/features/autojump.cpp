@@ -160,7 +160,7 @@ void AutojumpFeature::LoadFeature()
 
 		if (utils::DoesGameLookLikeSteampipe() || 
 			utils::DoesGameLookLikeBMSRetail() || 
-			utils::GetBuildNumber() >= 5135)
+			utils::GetBuildNumber() > 4104)
 		{
 			off_mv_ptr = 2;
 			off_player_ptr = 1;
