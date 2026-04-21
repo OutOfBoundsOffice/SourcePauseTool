@@ -335,23 +335,13 @@ typedef unsigned long l_uint32;
 ** ===================================================================
 */
 
-/* print a string */
-#if !defined(lua_writestring)
-#define lua_writestring(s,l)   fwrite((s), sizeof(char), (l), stdout)
-#endif
+void lua_writestring(const char* str, size_t num_bytes);
+void lua_writestringerror(const char* fmt, const char* err);
 
 /* print a newline and flush the output */
 #if !defined(lua_writeline)
-#define lua_writeline()        (lua_writestring("\n", 1), fflush(stdout))
+#define lua_writeline()        (lua_writestring("\n", 1))
 #endif
-
-/* print an error message */
-#if !defined(lua_writestringerror)
-#define lua_writestringerror(s,p) \
-        (fprintf(stderr, (s), (p)), fflush(stderr))
-#endif
-
-/* }================================================================== */
 
 #endif
 

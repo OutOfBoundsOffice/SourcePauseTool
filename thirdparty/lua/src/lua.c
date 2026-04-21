@@ -210,6 +210,16 @@ static int dostring (lua_State *L, const char *s, const char *name) {
 }
 
 
+void lua_writestring(const char* str, size_t num_bytes)
+{
+    fwrite(str, 1, num_bytes, stdout);
+}
+
+void lua_writestringerror(const char* fmt, const char* err)
+{
+    fprintf(stderr, fmt, err);
+}
+
 /*
 ** Receives 'globname[=modname]' and runs 'globname = require(modname)'.
 ** If there is no explicit modname and globname contains a '-', cut
