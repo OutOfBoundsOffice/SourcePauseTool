@@ -80,6 +80,7 @@ set(SPT_SOURCES
 	spt/features/ipc-spt.cpp
 	spt/features/isg.cpp
 	spt/features/leafvis.cpp
+	spt/features/lua.cpp
 	spt/features/movement_vars.cpp
 	spt/features/overlay.cpp
 	spt/features/pause.cpp
@@ -246,6 +247,7 @@ function(add_engine_branch dllName sdkDir engineBranchDefines)
 		ws2_32
 		${sdk_target}
 		monocle_lib
+		lua
 	)
 endfunction()
 
