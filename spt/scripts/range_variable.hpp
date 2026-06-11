@@ -1,4 +1,5 @@
 #pragma once
+#include <iomanip>
 #include <random>
 #include <sstream>
 #include "math.hpp"
@@ -77,7 +78,7 @@ namespace scripts
 	{
 		std::ostringstream os;
 
-		os << "[low: " << GetValueForIndex(lowIndex) << ", value: " << GetValueForIndex(valueIndex)
+		os << std::setprecision(9) << "[low: " << GetValueForIndex(lowIndex) << ", value: " << GetValueForIndex(valueIndex)
 		   << ", high: " << GetValueForIndex(highIndex) << "]";
 
 		return os.str();
