@@ -378,7 +378,7 @@ void FcpsImpl(FcpsEvent& event,
 		entRay.m_Start = ptEntityCenter;
 		entRay.m_Delta = ptEntityOriginalCenter - ptEntityCenter;
 
-		spt_tracing.ORIG_UTIL_TraceRay_server(entRay, fMask, pEntity, iEntityCollisionGroup, &traces[0]);
+		spt_tracing.UTIL_TraceRay_server(entRay, fMask, pEntity, iEntityCollisionGroup, &traces[0]);
 		detail.entTraces.emplace_back(entRay, traces[0], cache.GetIndexOfEnt(traces[0].m_pEnt));
 
 		if (traces[0].startsolid == false)
@@ -418,11 +418,11 @@ void FcpsImpl(FcpsEvent& event,
 				else
 				{
 					testRay.m_Start = ptExtents[counter];
-					spt_tracing.ORIG_UTIL_TraceRay_server(testRay,
-					                                      fMask,
-					                                      pEntity,
-					                                      iEntityCollisionGroup,
-					                                      &traces[0]);
+					spt_tracing.UTIL_TraceRay_server(testRay,
+					                                 fMask,
+					                                 pEntity,
+					                                 iEntityCollisionGroup,
+					                                 &traces[0]);
 					itNudge.testTraces.emplace_back(testRay,
 					                                traces[0],
 					                                cache.GetIndexOfEnt(traces[0].m_pEnt));
@@ -437,11 +437,11 @@ void FcpsImpl(FcpsEvent& event,
 				{
 					testRay.m_Start = ptExtents[counter2];
 					testRay.m_Delta = -testRay.m_Delta;
-					spt_tracing.ORIG_UTIL_TraceRay_server(testRay,
-					                                      fMask,
-					                                      pEntity,
-					                                      iEntityCollisionGroup,
-					                                      &traces[1]);
+					spt_tracing.UTIL_TraceRay_server(testRay,
+					                                 fMask,
+					                                 pEntity,
+					                                 iEntityCollisionGroup,
+					                                 &traces[1]);
 					itNudge.testTraces.emplace_back(testRay,
 					                                traces[1],
 					                                cache.GetIndexOfEnt(traces[1].m_pEnt));

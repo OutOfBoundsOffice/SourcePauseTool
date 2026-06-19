@@ -59,6 +59,25 @@ struct TraceFilterIgnorePlayer : public CTraceFilter
 class Tracing : public FeatureWrapper<Tracing>
 {
 public:
+#ifdef SSDK2013
+	DECL_MEMBER_CDECL(void,
+	                  UTIL_TraceRay_client,
+	                  const Ray_t& ray,
+	                  unsigned int mask,
+	                  const IHandleEntity* ignore,
+	                  int collisionGroup,
+	                  trace_t* ptr,
+	                  void* pExtraShouldHitCheckFn);
+
+	DECL_MEMBER_CDECL(void,
+	                  UTIL_TraceRay_server,
+	                  const Ray_t& ray,
+	                  unsigned int mask,
+	                  const IHandleEntity* ignore,
+	                  int collisionGroup,
+	                  trace_t* ptr,
+	                  void* pExtraShouldHitCheckFn);
+#else
 	DECL_MEMBER_CDECL(void,
 	                  UTIL_TraceRay_client,
 	                  const Ray_t& ray,
@@ -74,6 +93,7 @@ public:
 	                  const IHandleEntity* ignore,
 	                  int collisionGroup,
 	                  trace_t* ptr);
+#endif
 
 	DECL_HOOK_THISCALL(CBaseCombatWeapon*, GetActiveWeapon, IServerUnknown*);
 
@@ -117,6 +137,18 @@ public:
 	                                          unsigned int fMask,
 	                                          ITraceFilter* filter,
 	                                          trace_t& tr);
+
+	// Wrappers for UTIL_TraceRay because 2013 got an extra argument
+	void UTIL_TraceRay_client(const Ray_t& ray,
+	                          unsigned int mask,
+	                          const IHandleEntity* ignore,
+	                          int collisionGroup,
+	                          trace_t* ptr);
+	void UTIL_TraceRay_server(const Ray_t& ray,
+	                          unsigned int mask,
+	                          const IHandleEntity* ignore,
+	                          int collisionGroup,
+	                          trace_t* ptr);
 
 #ifdef SPT_TRACE_PORTAL_ENABLED
 	CBaseCombatWeapon* GetActiveWeapon();
