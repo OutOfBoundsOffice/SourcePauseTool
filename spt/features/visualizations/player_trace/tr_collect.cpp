@@ -76,7 +76,7 @@ void TrPlayerTrace::HostTickCollect(bool simulated, TrSegmentReason segmentReaso
 	if (!recordingCache)
 		return;
 
-	if (!utils::spt_serverEntList.Valid())
+	if (!utils::spt_serverEntList.GetPlayer())
 		return;
 
 	TrReadContextScope scope{*this};
@@ -126,105 +126,102 @@ void TrPlayerTrace::CollectPlayerData()
 	bool qPhysPosValid = false;
 
 	auto serverPlayer = utils::spt_serverEntList.GetPlayer();
+	Assert(!!serverPlayer);
 
-	if (serverPlayer)
+	// qphys transform
+
+	if (spt_playerio.m_vecAbsOrigin.ServerOffsetFound())
 	{
-		// qphys transform
-
-		if (spt_playerio.m_vecAbsOrigin.ServerOffsetFound())
-		{
-			data.qPosIdx = rc.GetCachedIdx(qPos = spt_playerio.m_vecAbsOrigin.GetValue());
-			qPhysPosValid = true;
-		}
-
-		if (spt_playerio.m_vecAbsVelocity.ServerOffsetFound())
-			data.qVelIdx = rc.GetCachedIdx(spt_playerio.m_vecAbsVelocity.GetValue());
-
-		// eyes
-
-		static utils::CachedField<QAngle, "CBasePlayer", "pl.v_angle", true> fVangle;
-
-		if (spt_playerio.m_vecViewOffset.ServerOffsetFound() && fVangle.Exists() && qPhysPosValid)
-		{
-			Vector eyePos = qPos + spt_playerio.m_vecViewOffset.GetValue();
-			QAngle eyeAng = *fVangle.GetPtr(serverPlayer);
-
-			data.transEyesIdx = rc.GetCachedIdx(TrTransform{
-			    rc.GetCachedIdx(eyePos),
-			    rc.GetCachedIdx(eyeAng),
-			});
-#ifdef SPT_PORTAL_UTILS
-			transformThroughPortal(utils::GetEnvironmentPortal(), eyePos, eyeAng, eyePos, eyeAng);
-#endif
-			data.transSgEyesIdx = rc.GetCachedIdx(TrTransform{
-			    rc.GetCachedIdx(eyePos),
-			    rc.GetCachedIdx(eyeAng),
-			});
-		}
-
-		// vphys transform
-
-		IPhysicsObject* playerPhysObj = spt_collideToMesh.GetPhysObj(serverPlayer);
-		if (playerPhysObj)
-		{
-			Vector vPos, vVel;
-			QAngle vAng;
-			playerPhysObj->GetPosition(&vPos, &vAng);
-			data.transVPhysIdx = rc.GetCachedIdx(TrTransform{
-			    rc.GetCachedIdx(vPos),
-			    rc.GetCachedIdx(vAng),
-			});
-			playerPhysObj->GetVelocity(&vVel, nullptr);
-			data.vVelIdx = rc.GetCachedIdx(vVel);
-
-			// contact points
-
-			static std::vector<TrIdx<TrPlayerContactPoint>> playerContactPoints;
-			playerContactPoints.clear();
-
-			IPhysicsFrictionSnapshot* snap = playerPhysObj->CreateFrictionSnapshot();
-			for (; snap->IsValid(); snap->NextFrictionData())
-			{
-				Vector pos, norm;
-				snap->GetContactPoint(pos);
-				snap->GetSurfaceNormal(norm);
-				IPhysicsObject* obj0 = snap->GetObject(0);
-				IPhysicsObject* obj1 = snap->GetObject(1);
-
-				playerContactPoints.push_back(rc.GetCachedIdx(TrPlayerContactPoint{
-				    .posIdx = rc.GetCachedIdx(pos),
-				    .normIdx = rc.GetCachedIdx(norm),
-				    .force = snap->GetNormalForce(),
-				    .objNameIdx =
-				        rc.GetStringIdx(obj0 == playerPhysObj ? obj1->GetName() : obj0->GetName()),
-				    .playerIsObj0 = obj0 == playerPhysObj,
-				}));
-			}
-			playerPhysObj->DestroyFrictionSnapshot(snap);
-			data.contactPtsSp = rc.GetCachedSpan(playerContactPoints);
-		}
-
-		// flags
-
-		static utils::CachedField<int, "CBaseEntity", "m_fFlags", true> fFlags;
-		static utils::CachedField<int, "CBaseEntity", "m_iHealth", true> fHealth;
-		static utils::CachedField<char, "CBaseEntity", "m_lifeState", true> fLifeState;
-		static utils::CachedField<int, "CBaseEntity", "m_CollisionGroup", true> fColGroup;
-		static utils::CachedField<unsigned char, "CBaseEntity", "m_MoveType", true> fMoveType;
-
-		data.m_fFlags = fFlags.GetValueOrDefault(serverPlayer);
-		data.fov = spt_propertyGetter.GetProperty<int>(1, "m_iFOV");
-		if (data.fov == 0)
-			data.fov = spt_propertyGetter.GetProperty<int>(1, "m_iDefaultFOV");
-		data.m_iHealth = fHealth.GetValueOrDefault(serverPlayer, -1);
-		data.m_lifeState = fLifeState.GetValueOrDefault(serverPlayer);
-		data.m_CollisionGroup = fColGroup.GetValueOrDefault(serverPlayer);
-		data.m_MoveType = fMoveType.GetValueOrDefault(serverPlayer);
-
-		auto envPortal = utils::spt_serverEntList.GetEnvironmentPortal();
-		if (envPortal)
-			data.envPortalHandle = envPortal->handle;
+		data.qPosIdx = rc.GetCachedIdx(qPos = spt_playerio.m_vecAbsOrigin.GetValue());
+		qPhysPosValid = true;
 	}
+
+	if (spt_playerio.m_vecAbsVelocity.ServerOffsetFound())
+		data.qVelIdx = rc.GetCachedIdx(spt_playerio.m_vecAbsVelocity.GetValue());
+
+	// eyes
+
+	static utils::CachedField<QAngle, "CBasePlayer", "pl.v_angle", true> fVangle;
+
+	if (spt_playerio.m_vecViewOffset.ServerOffsetFound() && fVangle.Exists() && qPhysPosValid)
+	{
+		Vector eyePos = qPos + spt_playerio.m_vecViewOffset.GetValue();
+		QAngle eyeAng = *fVangle.GetPtr(serverPlayer);
+
+		data.transEyesIdx = rc.GetCachedIdx(TrTransform{
+		    rc.GetCachedIdx(eyePos),
+		    rc.GetCachedIdx(eyeAng),
+		});
+#ifdef SPT_PORTAL_UTILS
+		transformThroughPortal(utils::GetEnvironmentPortal(), eyePos, eyeAng, eyePos, eyeAng);
+#endif
+		data.transSgEyesIdx = rc.GetCachedIdx(TrTransform{
+		    rc.GetCachedIdx(eyePos),
+		    rc.GetCachedIdx(eyeAng),
+		});
+	}
+
+	// vphys transform
+
+	IPhysicsObject* playerPhysObj = spt_collideToMesh.GetPhysObj(serverPlayer);
+	if (playerPhysObj)
+	{
+		Vector vPos, vVel;
+		QAngle vAng;
+		playerPhysObj->GetPosition(&vPos, &vAng);
+		data.transVPhysIdx = rc.GetCachedIdx(TrTransform{
+		    rc.GetCachedIdx(vPos),
+		    rc.GetCachedIdx(vAng),
+		});
+		playerPhysObj->GetVelocity(&vVel, nullptr);
+		data.vVelIdx = rc.GetCachedIdx(vVel);
+
+		// contact points
+
+		static std::vector<TrIdx<TrPlayerContactPoint>> playerContactPoints;
+		playerContactPoints.clear();
+
+		IPhysicsFrictionSnapshot* snap = playerPhysObj->CreateFrictionSnapshot();
+		for (; snap->IsValid(); snap->NextFrictionData())
+		{
+			Vector pos, norm;
+			snap->GetContactPoint(pos);
+			snap->GetSurfaceNormal(norm);
+			IPhysicsObject* obj0 = snap->GetObject(0);
+			IPhysicsObject* obj1 = snap->GetObject(1);
+
+			playerContactPoints.push_back(rc.GetCachedIdx(TrPlayerContactPoint{
+			    .posIdx = rc.GetCachedIdx(pos),
+			    .normIdx = rc.GetCachedIdx(norm),
+			    .force = snap->GetNormalForce(),
+			    .objNameIdx = rc.GetStringIdx(obj0 == playerPhysObj ? obj1->GetName() : obj0->GetName()),
+			    .playerIsObj0 = obj0 == playerPhysObj,
+			}));
+		}
+		playerPhysObj->DestroyFrictionSnapshot(snap);
+		data.contactPtsSp = rc.GetCachedSpan(playerContactPoints);
+	}
+
+	// flags
+
+	static utils::CachedField<int, "CBaseEntity", "m_fFlags", true> fFlags;
+	static utils::CachedField<int, "CBaseEntity", "m_iHealth", true> fHealth;
+	static utils::CachedField<char, "CBaseEntity", "m_lifeState", true> fLifeState;
+	static utils::CachedField<int, "CBaseEntity", "m_CollisionGroup", true> fColGroup;
+	static utils::CachedField<unsigned char, "CBaseEntity", "m_MoveType", true> fMoveType;
+
+	data.m_fFlags = fFlags.GetValueOrDefault(serverPlayer);
+	data.fov = spt_propertyGetter.GetProperty<int>(1, "m_iFOV");
+	if (data.fov == 0)
+		data.fov = spt_propertyGetter.GetProperty<int>(1, "m_iDefaultFOV");
+	data.m_iHealth = fHealth.GetValueOrDefault(serverPlayer, -1);
+	data.m_lifeState = fLifeState.GetValueOrDefault(serverPlayer);
+	data.m_CollisionGroup = fColGroup.GetValueOrDefault(serverPlayer);
+	data.m_MoveType = fMoveType.GetValueOrDefault(serverPlayer);
+
+	auto envPortal = utils::spt_serverEntList.GetEnvironmentPortal();
+	if (envPortal)
+		data.envPortalHandle = envPortal->handle;
 
 	auto& vec = Get<TrPlayerData>();
 	if (vec.empty() || !MemSameExceptTick(vec.back(), data))
