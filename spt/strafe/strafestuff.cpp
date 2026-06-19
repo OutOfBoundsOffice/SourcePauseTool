@@ -116,11 +116,11 @@ namespace Strafe
 			else
 				ray.Init(start, end, mins, maxs);
 
-			spt_tracing.ORIG_UTIL_TraceRay_client(ray,
-			                                      MASK_PLAYERSOLID_BRUSHONLY,
-			                                      utils::spt_clientEntList.GetPlayer(),
-			                                      COLLISION_GROUP_PLAYER_MOVEMENT,
-			                                      &trace);
+			spt_tracing.UTIL_TraceRay_client(ray,
+			                                 MASK_PLAYERSOLID_BRUSHONLY,
+			                                 utils::spt_clientEntList.GetPlayer(),
+			                                 COLLISION_GROUP_PLAYER_MOVEMENT,
+			                                 &trace);
 		}
 		else
 		{
@@ -154,11 +154,11 @@ namespace Strafe
 
 		Ray_t ray;
 		ray.Init(start, end);
-		spt_tracing.ORIG_UTIL_TraceRay_client(ray,
-		                                      MASK_PLAYERSOLID_BRUSHONLY,
-		                                      utils::spt_clientEntList.GetPlayer(),
-		                                      COLLISION_GROUP_PLAYER_MOVEMENT,
-		                                      &trace);
+		spt_tracing.UTIL_TraceRay_client(ray,
+		                                 MASK_PLAYERSOLID_BRUSHONLY,
+		                                 utils::spt_clientEntList.GetPlayer(),
+		                                 COLLISION_GROUP_PLAYER_MOVEMENT,
+		                                 &trace);
 #endif
 	}
 

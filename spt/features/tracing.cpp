@@ -258,6 +258,32 @@ WorldHitInfo Tracing::TraceLineWithWorldInfoServer(const Ray_t& ray,
 	return hitInfo;
 }
 
+void Tracing::UTIL_TraceRay_client(const Ray_t& ray,
+                                   unsigned int mask,
+                                   const IHandleEntity* ignore,
+                                   int collisionGroup,
+                                   trace_t* ptr)
+{
+#ifdef SSDK2013
+	spt_tracing.ORIG_UTIL_TraceRay_client(ray, mask, ignore, collisionGroup, ptr, nullptr);
+#else
+	spt_tracing.ORIG_UTIL_TraceRay_client(ray, mask, ignore, collisionGroup, ptr);
+#endif
+}
+
+void Tracing::UTIL_TraceRay_server(const Ray_t& ray,
+                                   unsigned int mask,
+                                   const IHandleEntity* ignore,
+                                   int collisionGroup,
+                                   trace_t* ptr)
+{
+#ifdef SSDK2013
+	spt_tracing.ORIG_UTIL_TraceRay_server(ray, mask, ignore, collisionGroup, ptr, nullptr);
+#else
+	spt_tracing.ORIG_UTIL_TraceRay_server(ray, mask, ignore, collisionGroup, ptr);
+#endif
+}
+
 IMPL_HOOK_FASTCALL(Tracing,
                    void,
                    CM_ClipBoxToBrush_1,
