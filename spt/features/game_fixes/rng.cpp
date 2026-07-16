@@ -43,18 +43,30 @@ namespace patterns
 	         "5135",
 	         "8B 44 24 04 85 C0 75 05 B8 01 00 00 00 A3 ?? ?? ?? ?? C3",
 	         "7122284",
-	         "55 8B EC 8B 45 08 B9 01 00 00 00 85 C0 0F 44 C1 A3 ?? ?? ?? ?? 5D C3");
+	         "55 8B EC 8B 45 08 B9 01 00 00 00 85 C0 0F 44 C1 A3 ?? ?? ?? ?? 5D C3",
+	         "1910503",
+	         "55 8B EC 8B 45 ?? 85 C0 75 ?? B8 01 00 00 00 A3 ?? ?? ?? ?? 5D C3");
 	PATTERNS(CBasePlayer__InitVCollision,
 	         "5135",
 	         "57 8B F9 8B 07 8B 90 ?? ?? ?? ?? FF D2 A1 ?? ?? ?? ?? 83 78 30 00",
 	         "7122284",
 	         "55 8B EC 83 EC 34 57 8B F9 8B 07 FF 90 ?? ?? ?? ?? A1 ?? ?? ?? ?? 83 78 30 00",
 	         "dmomm",
-	         "57 8B F9 8B 07 FF 90 ?? ?? ?? ?? 8B 0D ?? ?? ?? ?? 83 79 ?? 00");
+	         "57 8B F9 8B 07 FF 90 ?? ?? ?? ?? 8B 0D ?? ?? ?? ?? 83 79 ?? 00",
+	         "1910503-portal",
+	         "55 8B EC 83 EC 34 56 8B F1 8B 06 8B 90 ?? ?? ?? ?? FF D2 A1 ?? ?? ?? ??");
 	PATTERNS(PhysFrame,
 	         "5135",
-	         "55 8B EC 83 EC 0C 83 3D ?? ?? ?? ?? 00 53 56 57 0F 84 ?? ?? ?? ?? 80 3D ?? ?? ?? ?? 00");
-	PATTERNS(CSoundEmitterSystemBase__EnsureAvailableSlotsForGender, "5135", "83 EC 14 55");
+	         "55 8B EC 83 EC 0C 83 3D ?? ?? ?? ?? 00 53 56 57 0F 84 ?? ?? ?? ?? 80 3D ?? ?? ?? ?? 00",
+	         "7122284",
+	         "55 8B EC 8B 0D ?? ?? ?? ?? 83 EC 10 53 56 57 85 C9 0F 84 ?? ?? ?? ?? 80 3D ?? ?? ?? ?? 00");
+	PATTERNS(CSoundEmitterSystemBase__EnsureAvailableSlotsForGender,
+	         "5135",
+	         "83 EC 14 55 8B 6C 24 ?? 56 33 F6 3B EE 0F 8E ?? ?? ?? ?? 53",
+	         "1910503",
+	         "55 8B EC 8B 4D ?? 33 C0 83 EC 20 3B C8 0F 8E ?? ?? ?? ?? 53",
+	         "7122284",
+	         "55 8B EC 83 EC 20 53 8B 5D ?? 85 DB 0F 8E ?? ?? ?? ?? 33 D2");
 } // namespace patterns
 
 void RNGStuff::InitHooks()
@@ -84,16 +96,38 @@ void RNGStuff::PreHook()
 {
 	if (ORIG_ivp_srand)
 	{
-		uint32_t offs[] = {14, 17};
-		int idx = GetPatternIndex((void**)&ORIG_ivp_srand);
-		IVP_RAND_SEED = *(uint32_t**)((uintptr_t)ORIG_ivp_srand + offs[idx]);
+		int index = GetPatternIndex((void**)&ORIG_ivp_srand);
+		switch (index)
+		{
+		case 0: // 5135
+			IVP_RAND_SEED = *(uint32_t**)((uintptr_t)ORIG_ivp_srand + 14);
+			break;
+		case 1: // 7122284
+			IVP_RAND_SEED = *(uint32_t**)((uintptr_t)ORIG_ivp_srand + 17);
+			break;
+		case 2: // 1910503
+			IVP_RAND_SEED = *(uint32_t**)((uintptr_t)ORIG_ivp_srand + 16);
+			break;
+		default:
+			DevWarning("spt: unknown ivp_srand pattern index %d\n", index);
+			break;
+		}
 	}
 	if (ORIG_PhysFrame)
 	{
-		uint32_t offs[] = {24};
-		int idx = GetPatternIndex((void**)&ORIG_PhysFrame);
-		// PhysFrame() accesses m_bPaused which is the field immediately after m_impactSoundTime :)
-		g_PhysicsHook__m_impactSoundTime = *(float**)((uintptr_t)ORIG_PhysFrame + offs[idx]) - 1;
+		int index = GetPatternIndex((void**)&ORIG_ivp_srand);
+		switch (index)
+		{
+		case 0: // 5135
+			g_PhysicsHook__m_impactSoundTime = *(float**)((uintptr_t)ORIG_PhysFrame + 24) - 1;
+			break;
+		case 1: // 7122284
+			g_PhysicsHook__m_impactSoundTime = *(float**)((uintptr_t)ORIG_PhysFrame + 25) - 1;
+			break;
+		default:
+			DevWarning("spt: unknown PhysFrame pattern index %d\n", index);
+			break;
+		}
 	}
 }
 
