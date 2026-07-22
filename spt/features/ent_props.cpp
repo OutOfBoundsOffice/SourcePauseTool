@@ -20,11 +20,11 @@
 #include <regex>
 
 #ifdef SPT_HUD_ENABLED
-ConVar y_spt_hud_portal_bubble("y_spt_hud_portal_bubble", "0", FCVAR_CHEAT, "Turns on portal bubble index hud.\n");
+ConVar y_spt_hud_portal_bubble("y_spt_hud_portal_bubble", "0", FCVAR_NONE, "Turns on portal bubble index hud.\n");
 ConVar y_spt_hud_ent_info(
     "y_spt_hud_ent_info",
     "",
-    FCVAR_CHEAT,
+    FCVAR_NONE,
     "Display entity info on HUD. Format is \"[ent index],[prop regex],[prop regex],...,[prop regex];[ent index],...,[prop regex]\".\n");
 #endif
 

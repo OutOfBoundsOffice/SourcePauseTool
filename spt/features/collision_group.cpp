@@ -43,7 +43,7 @@ CollisionGroup spt_collisiongroup;
 
 CON_COMMAND_F(y_spt_set_collision_group,
               "Set player's collision group\nUsually:\n- 5 is normal collisions\n- 10 is quickclip\n",
-              FCVAR_CHEAT)
+              FCVAR_NONE)
 {
 	if (!spt_collisiongroup.ORIG_SetCollisionGroup)
 		return;

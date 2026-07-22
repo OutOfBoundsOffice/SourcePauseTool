@@ -18,7 +18,7 @@ extern ConVar _y_spt_overlay;
 HUDFeature spt_hud_feat;
 
 ConVar y_spt_hud("y_spt_hud", "1", 0, "When set to 1, displays SPT HUD.");
-ConVar y_spt_hud_left("y_spt_hud_left", "0", FCVAR_CHEAT, "When set to 1, displays SPT HUD on the left.");
+ConVar y_spt_hud_left("y_spt_hud_left", "0", FCVAR_NONE, "When set to 1, displays SPT HUD on the left.");
 
 const std::string FONT_DefaultFixedOutline = "DefaultFixedOutline";
 const std::string FONT_Trebuchet20 = "Trebuchet20";

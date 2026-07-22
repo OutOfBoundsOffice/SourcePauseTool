@@ -9,7 +9,7 @@
 
 #include "convar.hpp"
 
-ConVar y_spt_hud_isg("y_spt_hud_isg", "0", FCVAR_CHEAT, "Is the ISG flag set?\n");
+ConVar y_spt_hud_isg("y_spt_hud_isg", "0", FCVAR_NONE, "Is the ISG flag set?\n");
 
 namespace patterns
 {
@@ -56,7 +56,7 @@ private:
 
 static ISGFeature spt_isg;
 
-CON_COMMAND_F(y_spt_set_isg, "Sets the state of ISG in the game (1 or 0)", FCVAR_DONTRECORD | FCVAR_CHEAT)
+CON_COMMAND_F(y_spt_set_isg, "Sets the state of ISG in the game (1 or 0)", FCVAR_DONTRECORD)
 {
 	if (args.ArgC() < 2)
 	{

@@ -71,7 +71,7 @@ private:
 
 static Updater spt_updater;
 
-CON_COMMAND_F(y_spt_check_update, "Check the release information of spt.", FCVAR_CHEAT | FCVAR_DONTRECORD)
+CON_COMMAND_F(y_spt_check_update, "Check the release information of spt.", FCVAR_DONTRECORD)
 {
 	int res = spt_updater.CheckUpdate();
 	switch (res)
@@ -89,7 +89,7 @@ CON_COMMAND_F(y_spt_check_update, "Check the release information of spt.", FCVAR
 	}
 }
 
-CON_COMMAND_F(y_spt_update, "Check and install available update for spt", FCVAR_CHEAT | FCVAR_DONTRECORD)
+CON_COMMAND_F(y_spt_update, "Check and install available update for spt", FCVAR_DONTRECORD)
 {
 	if (args.ArgC() > 2)
 	{
@@ -121,7 +121,7 @@ CON_COMMAND_F(y_spt_update, "Check and install available update for spt", FCVAR_
 CON_COMMAND_F(
     y_spt_reload,
     "spt_reload [path]. Reloads the plugin. If a path is given, will try to replace the current loaded plugin with the one from the path.",
-    FCVAR_CHEAT | FCVAR_DONTRECORD)
+    FCVAR_DONTRECORD)
 {
 	if (args.ArgC() == 1)
 		spt_updater.ReloadPlugin();
@@ -129,7 +129,7 @@ CON_COMMAND_F(
 		spt_updater.ReloadFromPath(args.Arg(1));
 }
 
-CON_COMMAND_F(spt_unload, "Unload the plugin.", FCVAR_CHEAT | FCVAR_DONTRECORD)
+CON_COMMAND_F(spt_unload, "Unload the plugin.", FCVAR_DONTRECORD)
 {
 	int index = spt_updater.GetPluginIndex();
 	if (index == -1)

@@ -21,7 +21,7 @@ using interfaces::engine_server;
 
 ConVar y_spt_draw_portal_env("y_spt_draw_portal_env",
                              "0",
-                             FCVAR_CHEAT | FCVAR_DONTRECORD,
+                             FCVAR_DONTRECORD,
                              "Draw the geometry in a portal's physics environment; draws the following colors:\n"
                              "   - white: the portal hole\n"
                              "   - red: world geometry in front of the portal\n"
@@ -33,7 +33,7 @@ constexpr int SPT_PORTAL_SELECT_FLAGS = GPF_ALLOW_AUTO | GPF_ALLOW_PLAYER_ENV;
 ConVar y_spt_draw_portal_env_type(
     "y_spt_draw_portal_env_type",
     "auto",
-    FCVAR_CHEAT | FCVAR_DONTRECORD,
+    FCVAR_DONTRECORD,
     "This determines what portal to use for all spt_draw_portal_* cvars. Valid values are:\n"
     "" SPT_PORTAL_SELECT_DESCRIPTION_AUTO_PREFIX "" SPT_PORTAL_SELECT_DESCRIPTION_ENV_PREFIX
     "" SPT_PORTAL_SELECT_DESCRIPTION);
@@ -41,7 +41,7 @@ ConVar y_spt_draw_portal_env_type(
 ConVar y_spt_draw_portal_env_ents(
     "y_spt_draw_portal_env_ents",
     "0",
-    FCVAR_CHEAT | FCVAR_DONTRECORD,
+    FCVAR_DONTRECORD,
     "Draw entities owned by portal and shadow clones from remote portal; draws the following colors:\n"
     "   - white: the portal hole\n"
     "   - solid green: this entity collides with UTIL_Portal_TraceRay (and therefore so does the player)\n"
@@ -51,7 +51,7 @@ ConVar y_spt_draw_portal_env_ents(
 
 ConVar y_spt_draw_portal_env_remote("y_spt_draw_portal_env_remote",
                                     "0",
-                                    FCVAR_CHEAT | FCVAR_DONTRECORD,
+                                    FCVAR_DONTRECORD,
                                     "Draw geometry from remote portal; draws the following colors:\n"
                                     "   - white: the portal hole\n"
                                     "   - light red: world geometry cloned from the linked portal\n"

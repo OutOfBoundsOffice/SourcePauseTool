@@ -18,7 +18,7 @@
 ConVar spt_draw_world_collides(
     "spt_draw_world_collides",
     "0",
-    FCVAR_CHEAT | FCVAR_DONTRECORD,
+    FCVAR_DONTRECORD,
     "Draws the collision of whatever part of the world the player is looking at. Use 2 to ignore z testing. Uses the following colors:\n"
     "    - turquoise: box brush\n"
     "    - purple: complex (i.e. non-box) brush\n"
@@ -29,7 +29,7 @@ ConVar spt_draw_world_collides(
 const std::string _g_default_mask_str = std::to_string(MASK_PLAYERSOLID | MASK_VISIBLE);
 ConVar spt_draw_world_collides_mask("spt_draw_world_collides_mask",
                                     _g_default_mask_str.c_str(),
-                                    FCVAR_CHEAT | FCVAR_DONTRECORD | FCVAR_HIDDEN,
+                                    FCVAR_DONTRECORD | FCVAR_HIDDEN,
                                     "The tracing mask used by spt_draw_world_collides.");
 
 #define _ZTEST (spt_draw_world_collides.GetInt() < 2)

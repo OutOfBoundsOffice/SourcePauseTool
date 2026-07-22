@@ -11,7 +11,7 @@
 ConVar y_spt_prevent_vag_crash(
     "y_spt_prevent_vag_crash",
     "0",
-    FCVAR_CHEAT | FCVAR_DONTRECORD,
+    FCVAR_DONTRECORD,
     "Prevents the game from crashing from too many recursive teleports (useful when searching for vertical angle glitches).\n");
 
 // spt_prevent_vag_crash

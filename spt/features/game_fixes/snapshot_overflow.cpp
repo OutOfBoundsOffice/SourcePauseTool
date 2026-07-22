@@ -4,7 +4,7 @@
 
 ConVar spt_prevent_snapshot_overflow("spt_prevent_snapshot_overflow",
                                      "0",
-                                     FCVAR_CHEAT | FCVAR_DONTRECORD,
+                                     FCVAR_DONTRECORD,
                                      "If enabled, tries to prevent the reliable snapshot overflow error.");
 
 namespace patterns

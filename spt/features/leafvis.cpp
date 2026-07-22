@@ -11,7 +11,7 @@ namespace patterns
 
 ConVar y_spt_leafvis_index("y_spt_leafvis_index",
                            "0",
-                           FCVAR_CHEAT,
+                           FCVAR_NONE,
                            "Choose which BSP leaf mat_leafvis will use. Requires mat_leafvis to be set\n");
 
 // Enhance mat_leafvis by allowing you to choose the BSP leaf by index

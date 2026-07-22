@@ -20,7 +20,7 @@
 #undef min
 #undef max
 
-ConVar y_spt_hud_oob("y_spt_hud_oob", "0", FCVAR_CHEAT, "Is the player OoB?");
+ConVar y_spt_hud_oob("y_spt_hud_oob", "0", FCVAR_NONE, "Is the player OoB?");
 
 Tracing spt_tracing;
 

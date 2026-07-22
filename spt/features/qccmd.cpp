@@ -12,7 +12,7 @@
 
 ConVar spt_qc_cmd("spt_qc_cmd",
                   "",
-                  FCVAR_CHEAT,
+                  FCVAR_NONE,
                   "Execute command when quickclip occurs. "
                   "This is detected by the difference between "
                   "the quake position and the shadow position "
@@ -22,18 +22,18 @@ ConVar spt_qc_cmd("spt_qc_cmd",
 ConVar spt_qc_threshold(
     "spt_qc_threshold",
     "32",
-    FCVAR_CHEAT,
+    FCVAR_NONE,
     "Threshold for quickclip detection, the distance between the quake hitbox and havok hitbox must exceed this before the teleport.\n");
 
 ConVar spt_qc_maxdist_to_prev(
     "spt_qc_maxdist_to_prev",
     "200",
-    FCVAR_CHEAT | FCVAR_HIDDEN,
+    FCVAR_HIDDEN,
     "Max distance to previous shadow position. This is to prevent loading a save with a havok hitbox differential causing the qc command to trigger.\n");
 
 ConVar spt_qc_teleport_eps("spt_qc_teleport_eps",
                            "1",
-                           FCVAR_CHEAT | FCVAR_HIDDEN,
+                           FCVAR_HIDDEN,
                            "Quake hitbox needs to be within this many units to be considered teleported.\n");
 
 // Execute command on quickclip

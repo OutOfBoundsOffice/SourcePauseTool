@@ -14,11 +14,11 @@
 #include "spt\features\playerio.hpp"
 #include "imgui\imgui_interface.hpp"
 
-ConVar y_spt_draw_vag_trace("y_spt_draw_vag_trace", "0", FCVAR_CHEAT, "Draw VAG teleport destination(s)");
+ConVar y_spt_draw_vag_trace("y_spt_draw_vag_trace", "0", FCVAR_NONE, "Draw VAG teleport destination(s)");
 
 ConVar y_spt_draw_vag_target_trace("y_spt_draw_vag_target_trace",
                                    "0",
-                                   FCVAR_CHEAT,
+                                   FCVAR_NONE,
                                    "Draw where to place wall/floor/ceiling portal to get to VAG target");
 
 constexpr int SPT_PORTAL_SELECT_FLAGS = GPF_ALLOW_AUTO | GPF_ALLOW_OVERLAY | GPF_ONLY_OPEN_PORTALS;
@@ -26,14 +26,14 @@ constexpr int SPT_PORTAL_SELECT_FLAGS = GPF_ALLOW_AUTO | GPF_ALLOW_OVERLAY | GPF
 ConVar y_spt_draw_vag_entry_portal(
     "y_spt_draw_vag_entry_portal",
     "overlay",
-    FCVAR_CHEAT,
+    FCVAR_NONE,
     "Chooses the portal for the VAG trace, this is the portal you enter. Valid options are:\n"
     "" SPT_PORTAL_SELECT_DESCRIPTION_OVERLAY_PREFIX "" SPT_PORTAL_SELECT_DESCRIPTION_AUTO_PREFIX
     "" SPT_PORTAL_SELECT_DESCRIPTION);
 
 ConVar y_spt_draw_vag_lock_entry("y_spt_draw_vag_lock_entry",
                                  "1",
-                                 FCVAR_CHEAT,
+                                 FCVAR_NONE,
                                  "VAG trace type:\n"
                                  "  0 - Lock the exit portal in place\n"
                                  "  1 - Lock the entry portal in place\n"

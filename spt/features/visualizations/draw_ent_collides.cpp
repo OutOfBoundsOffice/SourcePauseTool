@@ -20,7 +20,7 @@
 ConVar spt_draw_ent_collides(
     "spt_draw_ent_collides",
     "0",
-    FCVAR_CHEAT | FCVAR_DONTRECORD,
+    FCVAR_DONTRECORD,
     "Draws the physics objects of all entities (except for the world and player), use 2 to ignore z testing.\n"
     "    - a shaded color means that the player likely collides with the entity\n"
     "    - a green mesh means that the server/vphysics agree on where the entity is\n"

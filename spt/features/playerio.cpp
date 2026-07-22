@@ -30,23 +30,23 @@ static void* cinput_thisptr = nullptr;
 
 ConVar spt_hud_position("spt_hud_position",
                         "0",
-                        FCVAR_CHEAT,
+                        FCVAR_NONE,
                         "Turns on the position hud.\n"
                         "=1: eye position\n"
                         ">1: player position with more precision.");
-ConVar spt_hud_angles("spt_hud_angles", "0", FCVAR_CHEAT, "Turns on the angles hud with more precision.");
-ConVar y_spt_hud_accel("y_spt_hud_accel", "0", FCVAR_CHEAT, "Turns on the acceleration hud.");
+ConVar spt_hud_angles("spt_hud_angles", "0", FCVAR_NONE, "Turns on the angles hud with more precision.");
+ConVar y_spt_hud_accel("y_spt_hud_accel", "0", FCVAR_NONE, "Turns on the acceleration hud.");
 ConVar y_spt_hud_ag_sg_tester("y_spt_hud_ag_sg_tester",
                               "0",
-                              FCVAR_CHEAT,
+                              FCVAR_NONE,
                               "Tests if angle glitch will save glitch you.");
-ConVar y_spt_hud_flags("y_spt_hud_flags", "0", FCVAR_CHEAT, "Turns on the flags hud.");
-ConVar y_spt_hud_moveflags("y_spt_hud_moveflags", "0", FCVAR_CHEAT, "Turns on the move type hud.");
-ConVar y_spt_hud_movecollideflags("y_spt_hud_movecollideflags", "0", FCVAR_CHEAT, "Turns on the move collide hud.");
-ConVar y_spt_hud_collisionflags("y_spt_hud_collisionflags", "0", FCVAR_CHEAT, "Turns on the collision group hud.");
-ConVar y_spt_hud_vars("y_spt_hud_vars", "0", FCVAR_CHEAT, "Turns on the movement vars HUD.");
-ConVar y_spt_hud_velocity("y_spt_hud_velocity", "0", FCVAR_CHEAT, "Turns on the velocity hud.");
-ConVar y_spt_hud_velocity_angles("y_spt_hud_velocity_angles", "0", FCVAR_CHEAT, "Display velocity Euler angles.");
+ConVar y_spt_hud_flags("y_spt_hud_flags", "0", FCVAR_NONE, "Turns on the flags hud.");
+ConVar y_spt_hud_moveflags("y_spt_hud_moveflags", "0", FCVAR_NONE, "Turns on the move type hud.");
+ConVar y_spt_hud_movecollideflags("y_spt_hud_movecollideflags", "0", FCVAR_NONE, "Turns on the move collide hud.");
+ConVar y_spt_hud_collisionflags("y_spt_hud_collisionflags", "0", FCVAR_NONE, "Turns on the collision group hud.");
+ConVar y_spt_hud_vars("y_spt_hud_vars", "0", FCVAR_NONE, "Turns on the movement vars HUD.");
+ConVar y_spt_hud_velocity("y_spt_hud_velocity", "0", FCVAR_NONE, "Turns on the velocity hud.");
+ConVar y_spt_hud_velocity_angles("y_spt_hud_velocity_angles", "0", FCVAR_NONE, "Display velocity Euler angles.");
 
 namespace patterns
 {

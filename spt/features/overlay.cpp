@@ -24,11 +24,11 @@
 
 ConVar _y_spt_overlay("_y_spt_overlay",
                       "0",
-                      FCVAR_CHEAT,
+                      FCVAR_NONE,
                       "Enables the overlay camera in the top left of the screen.\n");
 ConVar _y_spt_overlay_type("_y_spt_overlay_type",
                            "0",
-                           FCVAR_CHEAT,
+                           FCVAR_NONE,
                            "Overlay type:\n"
                            "  0 = save glitch body\n"
                            "  1 = angle glitch simulation\n"
@@ -47,7 +47,7 @@ constexpr int SPT_PORTAL_SELECT_FLAGS = GPF_ALLOW_AUTO | GPF_ALLOW_PLAYER_ENV;
 ConVar _y_spt_overlay_portal(
     "_y_spt_overlay_portal",
     "env",
-    FCVAR_CHEAT,
+    FCVAR_NONE,
     "Chooses the portal for the overlay camera. For the SG camera this is the portal you save glitch on, for angle glitch simulation this is the portal you enter. Valid values are:\n"
     "" SPT_PORTAL_SELECT_DESCRIPTION_ENV_PREFIX "" SPT_PORTAL_SELECT_DESCRIPTION_AUTO_PREFIX
     "" SPT_PORTAL_SELECT_DESCRIPTION);
@@ -55,7 +55,7 @@ ConVar _y_spt_overlay_portal(
 
 ConVar _y_spt_overlay_width("_y_spt_overlay_width",
                             "480",
-                            FCVAR_CHEAT,
+                            FCVAR_NONE,
                             "Determines the width of the overlay. Height is determined automatically from width.\n",
                             true,
                             20.0f,
@@ -63,18 +63,18 @@ ConVar _y_spt_overlay_width("_y_spt_overlay_width",
                             3840.0f);
 ConVar _y_spt_overlay_fov("_y_spt_overlay_fov",
                           "90",
-                          FCVAR_CHEAT,
+                          FCVAR_NONE,
                           "Determines the FOV of the overlay.\n",
                           true,
                           1.f,
                           true,
                           175.f);
-ConVar _y_spt_overlay_swap("_y_spt_overlay_swap", "0", FCVAR_CHEAT, "Swap alternate view and main screen?\n");
+ConVar _y_spt_overlay_swap("_y_spt_overlay_swap", "0", FCVAR_NONE, "Swap alternate view and main screen?\n");
 
 #if defined(SPT_HUD_ENABLED) && !defined(SPT_HUD_TEXTONLY)
 ConVar _y_spt_overlay_crosshair_size("_y_spt_overlay_crosshair_size",
                                      "10",
-                                     FCVAR_CHEAT,
+                                     FCVAR_NONE,
                                      "Overlay crosshair size.",
                                      true,
                                      1,
@@ -82,7 +82,7 @@ ConVar _y_spt_overlay_crosshair_size("_y_spt_overlay_crosshair_size",
                                      200);
 ConVar _y_spt_overlay_crosshair_thickness("_y_spt_overlay_crosshair_thickness",
                                           "1",
-                                          FCVAR_CHEAT,
+                                          FCVAR_NONE,
                                           "Overlay crosshair thickness.",
                                           true,
                                           1,
@@ -90,11 +90,11 @@ ConVar _y_spt_overlay_crosshair_thickness("_y_spt_overlay_crosshair_thickness",
                                           15);
 ConVar _y_spt_overlay_crosshair_color("_y_spt_overlay_crosshair_color",
                                       "0 255 0 255",
-                                      FCVAR_CHEAT,
+                                      FCVAR_NONE,
                                       "Overlay crosshair RGBA color.");
 #endif
 
-ConVar _y_spt_overlay_no_roll("_y_spt_overlay_no_roll", "1", FCVAR_CHEAT, "Set the roll of overlay camera roll to 0.");
+ConVar _y_spt_overlay_no_roll("_y_spt_overlay_no_roll", "1", FCVAR_NONE, "Set the roll of overlay camera roll to 0.");
 
 Overlay spt_overlay;
 

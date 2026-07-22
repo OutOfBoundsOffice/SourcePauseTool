@@ -55,20 +55,20 @@ public:
 static HudOobEntsFeature spt_hud_oob_ents_feat;
 
 #ifdef SPT_HUD_ENABLED
-ConVar spt_hud_oob_ents("spt_hud_oob_ents", "0", FCVAR_CHEAT, "Shows entities that are oob.");
+ConVar spt_hud_oob_ents("spt_hud_oob_ents", "0", FCVAR_NONE, "Shows entities that are oob.");
 #endif
 
 #ifdef SPT_MESH_RENDERING_ENABLED
 ConVar spt_draw_oob_ents("spt_draw_oob_ents",
                          "0",
-                         FCVAR_CHEAT,
+                         FCVAR_NONE,
                          "Draws a position indicator for entities.\n"
                          "    1 - draw for oob ents only\n"
                          "    2 - no z-test\n"
                          "    3 - draw for all ents & no-ztest\n");
 #endif
 
-CON_COMMAND_F(spt_print_oob_ents, "Prints entities that are oob", FCVAR_DONTRECORD | FCVAR_CHEAT)
+CON_COMMAND_F(spt_print_oob_ents, "Prints entities that are oob", FCVAR_DONTRECORD)
 {
 	spt_hud_oob_ents_feat.PrintEntsCon();
 }

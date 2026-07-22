@@ -19,7 +19,7 @@
 
 ConVar y_spt_draw_mesh_examples("y_spt_draw_mesh_examples",
                                 "0",
-                                FCVAR_CHEAT | FCVAR_DONTRECORD,
+                                FCVAR_DONTRECORD,
                                 "Draw a bunch of example meshes near the origin.");
 
 static std::vector<class BaseMeshRenderTest*> tests;

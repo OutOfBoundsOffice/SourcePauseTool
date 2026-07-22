@@ -17,7 +17,7 @@
 #include "spt\utils\interfaces.hpp"
 #include "imgui\imgui_interface.hpp"
 
-ConVar y_spt_draw_seams("y_spt_draw_seams", "0", FCVAR_CHEAT, "Draws seamshot stuff");
+ConVar y_spt_draw_seams("y_spt_draw_seams", "0", FCVAR_NONE, "Draws seamshot stuff");
 
 class DrawSeamsFeature : public FeatureWrapper<DrawSeamsFeature>
 {

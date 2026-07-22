@@ -144,7 +144,7 @@ Camera spt_camera;
 ConVar y_spt_cam_control(
     "y_spt_cam_control",
     "0",
-    FCVAR_CHEAT,
+    FCVAR_NONE,
     "Changes the camera control type.\n"
     "0 = Default\n"
     "1 = Drive mode\n"
@@ -159,7 +159,7 @@ ConVar y_spt_cam_control(
     "    Sets the camera position to an entity. Use spt_cam_drive_ent to set the entity.\n"
     "4 = Trace drive mode\n"
     "    Sets the camera position to the currently active trace");
-ConVar y_spt_cam_drive("y_spt_cam_drive", "1", FCVAR_CHEAT, "Enables or disables camera drive mode in-game.");
+ConVar y_spt_cam_drive("y_spt_cam_drive", "1", FCVAR_NONE, "Enables or disables camera drive mode in-game.");
 ConVar y_spt_cam_drive_speed("y_spt_cam_drive_speed", "200", 0, "Speed for moving in camera drive mode.");
 ConVar y_spt_cam_path_interp("y_spt_cam_path_interp",
                              "1",
@@ -168,7 +168,7 @@ ConVar y_spt_cam_path_interp("y_spt_cam_path_interp",
                              "0 = Linear interpolation\n"
                              "1 = Cubic spline\n"
                              "2 = Piecewise Cubic Hermite Interpolating Polynomial (PCHIP)");
-ConVar y_spt_cam_path_draw("y_spt_cam_path_draw", "0", FCVAR_CHEAT, "Draws the current camera path.");
+ConVar y_spt_cam_path_draw("y_spt_cam_path_draw", "0", FCVAR_NONE, "Draws the current camera path.");
 
 ConVar _y_spt_force_fov("_y_spt_force_fov", "0", 0, "Force FOV to some value.");
 

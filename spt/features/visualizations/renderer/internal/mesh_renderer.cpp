@@ -41,7 +41,7 @@
 ConVar y_spt_draw_mesh_debug(
     "y_spt_draw_mesh_debug",
     "0",
-    FCVAR_CHEAT | FCVAR_DONTRECORD,
+    FCVAR_DONTRECORD,
     "Draws the AABB and position metric of all meshes, uses the following colors:\n"
     "   - red: static mesh\n"
     "   - blue: dynamic mesh\n"

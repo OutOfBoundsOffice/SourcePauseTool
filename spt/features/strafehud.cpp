@@ -62,12 +62,12 @@ private:
 
 static StrafeHUD feat_strafehud;
 
-ConVar spt_strafehud("spt_strafehud", "0", FCVAR_CHEAT, "Draws the strafe HUD.");
-ConVar spt_strafehud_x("spt_strafehud_x", "-10", FCVAR_CHEAT, "The X position for the strafe HUD.");
-ConVar spt_strafehud_y("spt_strafehud_y", "-10", FCVAR_CHEAT, "The Y position for the strafe HUD.");
+ConVar spt_strafehud("spt_strafehud", "0", FCVAR_NONE, "Draws the strafe HUD.");
+ConVar spt_strafehud_x("spt_strafehud_x", "-10", FCVAR_NONE, "The X position for the strafe HUD.");
+ConVar spt_strafehud_y("spt_strafehud_y", "-10", FCVAR_NONE, "The Y position for the strafe HUD.");
 ConVar spt_strafehud_size("spt_strafehud_size",
                           "256",
-                          FCVAR_CHEAT,
+                          FCVAR_NONE,
                           "The width and height of the strafe HUD.",
                           true,
                           1,
@@ -75,7 +75,7 @@ ConVar spt_strafehud_size("spt_strafehud_size",
                           0);
 ConVar spt_strafehud_detail_scale("spt_strafehud_detail_scale",
                                   "4",
-                                  FCVAR_CHEAT,
+                                  FCVAR_NONE,
                                   "The detail scale for the lines of the strafe HUD.",
                                   true,
                                   1,
@@ -83,7 +83,7 @@ ConVar spt_strafehud_detail_scale("spt_strafehud_detail_scale",
                                   15);
 ConVar spt_strafehud_lock_mode("spt_strafehud_lock_mode",
                                "1",
-                               FCVAR_CHEAT,
+                               FCVAR_NONE,
                                "Lock mode used by the strafe HUD:\n"
                                "0 - view direction\n"
                                "1 - velocity direction\n"

@@ -25,12 +25,12 @@
 #undef max
 #undef clamp
 
-ConVar y_spt_jhud_hops("y_spt_jhud_hops", "0", FCVAR_CHEAT, "Turns on the hop practice Jump HUD.");
-ConVar y_spt_jhud_ljstats("y_spt_jhud_ljstats", "0", FCVAR_CHEAT, "Turns on the LJ stats Jump HUD.");
-ConVar y_spt_jhud_velocity("y_spt_jhud_velocity", "0", FCVAR_CHEAT, "Turns on the velocity Jump HUD.");
-ConVar spt_jhud_strafe("spt_jhud_strafe", "0", FCVAR_CHEAT, "Turns on the strafe percentage Jump HUD.");
-ConVar y_spt_jhud_x("y_spt_jhud_x", "0", FCVAR_CHEAT, "Jump HUD x offset.");
-ConVar y_spt_jhud_y("y_spt_jhud_y", "100", FCVAR_CHEAT, "Jump HUD y offset.");
+ConVar y_spt_jhud_hops("y_spt_jhud_hops", "0", FCVAR_NONE, "Turns on the hop practice Jump HUD.");
+ConVar y_spt_jhud_ljstats("y_spt_jhud_ljstats", "0", FCVAR_NONE, "Turns on the LJ stats Jump HUD.");
+ConVar y_spt_jhud_velocity("y_spt_jhud_velocity", "0", FCVAR_NONE, "Turns on the velocity Jump HUD.");
+ConVar spt_jhud_strafe("spt_jhud_strafe", "0", FCVAR_NONE, "Turns on the strafe percentage Jump HUD.");
+ConVar y_spt_jhud_x("y_spt_jhud_x", "0", FCVAR_NONE, "Jump HUD x offset.");
+ConVar y_spt_jhud_y("y_spt_jhud_y", "100", FCVAR_NONE, "Jump HUD y offset.");
 
 namespace ljstats
 {

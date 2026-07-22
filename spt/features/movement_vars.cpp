@@ -17,7 +17,7 @@ static ConVar* _sv_maxspeed_cvar = nullptr;
 ConVar spt_player_maxspeed(
     "spt_player_maxspeed",
     "0",
-    FCVAR_DEMO | FCVAR_CHEAT,
+    FCVAR_DEMO,
     "If nonzero, set player maxspeed to this value. When changed also changes cl_forwardspeed/cl_sidespeed/cl_backspeed/sv_maxspeed to match this value.",
     Change_Maxspeed);
 

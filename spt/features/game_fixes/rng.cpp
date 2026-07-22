@@ -14,20 +14,20 @@
 ConVar y_spt_set_ivp_seed_on_load(
     "y_spt_set_ivp_seed_on_load",
     "",
-    FCVAR_CHEAT,
+    FCVAR_NONE,
     "Sets the ivp seed once during the next load, can prevent some physics rng when running a tas.");
 
 ConVar spt_set_physics_hook_offset_on_load(
     "spt_set_physics_hook_offset_on_load",
     "",
-    FCVAR_CHEAT,
+    FCVAR_NONE,
     "Sets the offset of the physics hook timer once during the next load; this may contribute to the uniform random stream.\n"
     "Valid values are integer multiples of the tickrate in [0,0.05f].");
 
 ConVar spt_set_all_sounds_available_after_load(
     "spt_set_all_sounds_available_after_load",
     "0",
-    FCVAR_CHEAT | FCVAR_TAS_RESET,
+    FCVAR_TAS_RESET,
     "Set to 1 for consistent sound rng, which may contribute to the uniform random stream. Useful for new TAS scripts, but may break old scripts.");
 
 RNGStuff spt_rng;

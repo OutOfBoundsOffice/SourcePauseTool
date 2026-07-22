@@ -43,16 +43,16 @@
 
 ConVar y_spt_hud_portal_placement("y_spt_hud_portal_placement",
                                   "0",
-                                  FCVAR_CHEAT,
+                                  FCVAR_NONE,
                                   "Show portal placement info\n"
                                   "      1 = Boolean result\n"
                                   "      2 = String result\n"
                                   "      3 = Float result");
-ConVar y_spt_draw_pp("y_spt_draw_pp", "0", FCVAR_CHEAT, "Draw portal placement.");
-ConVar y_spt_draw_pp_blue("y_spt_draw_pp_blue", "1", FCVAR_CHEAT, "Draw blue portal placement.");
-ConVar y_spt_draw_pp_orange("y_spt_draw_pp_orange", "1", FCVAR_CHEAT, "Draw orange portal placement.");
-ConVar y_spt_draw_pp_failed("y_spt_draw_pp_failed", "0", FCVAR_CHEAT, "Draw failed portal placement.");
-ConVar y_spt_draw_pp_bbox("y_spt_draw_pp_bbox", "0", FCVAR_CHEAT, "Draw the bounding box of the portal placement.");
+ConVar y_spt_draw_pp("y_spt_draw_pp", "0", FCVAR_NONE, "Draw portal placement.");
+ConVar y_spt_draw_pp_blue("y_spt_draw_pp_blue", "1", FCVAR_NONE, "Draw blue portal placement.");
+ConVar y_spt_draw_pp_orange("y_spt_draw_pp_orange", "1", FCVAR_NONE, "Draw orange portal placement.");
+ConVar y_spt_draw_pp_failed("y_spt_draw_pp_failed", "0", FCVAR_NONE, "Draw failed portal placement.");
+ConVar y_spt_draw_pp_bbox("y_spt_draw_pp_bbox", "0", FCVAR_NONE, "Draw the bounding box of the portal placement.");
 
 enum PlacementGridFlags
 {
@@ -184,7 +184,7 @@ CON_COMMAND_F(
     "  green - portal placement success, with darker shades meaning a further portal bump\n"
     "  red   - portal placement failure\n"
     "  blue  - portal placement success but the portal will fizzle 0.1s after landing",
-    FCVAR_CHEAT)
+    FCVAR_NONE)
 {
 	auto& grid = spt_pp.ppGrid;
 	int newFlags = PLACEMENT_GRID_ENABLED;
