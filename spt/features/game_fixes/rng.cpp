@@ -4,12 +4,16 @@
 #include "tier1/checksum_md5.h"
 #include "cmodel.h"
 #include "spt\cvars.hpp"
+#include "vstdlib/random.h"
 
 #ifdef OE
 #include "..\game_shared\usercmd.h"
 #else
 #include "usercmd.h"
 #endif
+
+typedef void (*_RandomSeed)(int seed);
+extern _RandomSeed SetRandomSeed;
 
 ConVar y_spt_set_ivp_seed_on_load(
     "y_spt_set_ivp_seed_on_load",
@@ -29,6 +33,12 @@ ConVar spt_set_all_sounds_available_after_load(
     "0",
     FCVAR_CHEAT | FCVAR_TAS_RESET,
     "Set to 1 for consistent sound rng, which may contribute to the uniform random stream. Useful for new TAS scripts, but may break old scripts.");
+
+ConVar spt_set_game_seed_on_load(
+    "spt_set_game_seed_on_load",
+    "",
+    FCVAR_CHEAT,
+    "Sets the game seed once during the next load.");
 
 RNGStuff spt_rng;
 
@@ -102,7 +112,10 @@ void RNGStuff::LoadFeature()
 	if (ORIG_CBasePlayer__InitVCollision)
 	{
 		if (ORIG_ivp_srand && spt_rng.IVP_RAND_SEED)
+		{
 			InitConcommandBase(y_spt_set_ivp_seed_on_load);
+			InitConcommandBase(spt_set_game_seed_on_load);
+		}
 		if (g_PhysicsHook__m_impactSoundTime)
 			InitConcommandBase(spt_set_physics_hook_offset_on_load);
 		if (ORIG_CSoundEmitterSystemBase__EnsureAvailableSlotsForGender)
@@ -146,6 +159,14 @@ IMPL_HOOK_THISCALL(RNGStuff,
 			y_spt_set_ivp_seed_on_load.SetValue("");
 		}
 		DevWarning("spt: ivp seed is %u\n", *spt_rng.IVP_RAND_SEED);
+
+		if (spt_set_game_seed_on_load.GetString()[0] != '\0')
+		{
+			int seed = strtoul(spt_set_game_seed_on_load.GetString(), nullptr, 10);
+			SetRandomSeed(seed);
+			spt_set_game_seed_on_load.SetValue("");
+			DevWarning("spt: game seed is %u\n", seed);
+		}
 	}
 
 	if (spt_rng.g_PhysicsHook__m_impactSoundTime)

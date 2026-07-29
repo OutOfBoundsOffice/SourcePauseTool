@@ -93,6 +93,9 @@ ConVar* _sv_maxvelocity = nullptr;
 ConVar* _sv_bounce = nullptr;
 ConVar* _sv_cheats = nullptr;
 
+typedef void (*_RandomSeed)(int seed);
+_RandomSeed SetRandomSeed;
+
 void CallServerCommand(const char* cmd)
 {
 	if (interfaces::engine_client)
@@ -270,6 +273,7 @@ static void GrabTier0Stuff()
 		SetFuncIfFound((void**)&KeyValuesSystem_impl,
 		               GetProcAddress(moduleHandleVstdlib, "KeyValuesSystem"),
 		               true);
+		SetFuncIfFound((void**)&SetRandomSeed, GetProcAddress(moduleHandleVstdlib, "RandomSeed"));
 	}
 }
 
