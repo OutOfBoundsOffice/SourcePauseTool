@@ -37,7 +37,7 @@ ConVar spt_set_all_sounds_available_after_load(
 ConVar spt_set_game_seed_on_load(
     "spt_set_game_seed_on_load",
     "",
-    FCVAR_CHEAT,
+    FCVAR_TAS_RESET,
     "Sets the game seed once during the next load.");
 
 RNGStuff spt_rng;
@@ -163,9 +163,12 @@ IMPL_HOOK_THISCALL(RNGStuff,
 		if (spt_set_game_seed_on_load.GetString()[0] != '\0')
 		{
 			int seed = strtoul(spt_set_game_seed_on_load.GetString(), nullptr, 10);
-			SetRandomSeed(seed);
-			spt_set_game_seed_on_load.SetValue("");
-			DevWarning("spt: game seed is %u\n", seed);
+			if (seed != 0)
+			{
+				SetRandomSeed(seed);
+				spt_set_game_seed_on_load.SetValue("");
+				DevWarning("spt: game seed is %u\n", seed);
+			}
 		}
 	}
 

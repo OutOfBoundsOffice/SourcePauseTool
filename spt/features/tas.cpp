@@ -426,6 +426,8 @@ bool TASFeature::WriteTemplateScript(const char* filePath, const char* saveName,
 	     std::format("{} {}", spt_set_physics_hook_offset_on_load.GetName(), spt_tickrate.GetTickrate())});
 	settingsList.push_back({spt_set_all_sounds_available_after_load.IsRegistered(),
 	                        std::format("{} 1", spt_set_all_sounds_available_after_load.GetName())});
+	settingsList.push_back({spt_set_game_seed_on_load.IsRegistered(),
+	                        std::format("{} 0", wrangleName(spt_set_game_seed_on_load))});
 
 	std::ostringstream settingsStream;
 	for (const auto& setting : settingsList)
