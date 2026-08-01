@@ -94,7 +94,7 @@ ConVar* _sv_bounce = nullptr;
 ConVar* _sv_cheats = nullptr;
 
 typedef void (*_RandomSeed)(int seed);
-_RandomSeed SetRandomSeed;
+_RandomSeed SetRandomSeed = nullptr;
 
 void CallServerCommand(const char* cmd)
 {

@@ -37,7 +37,7 @@ ConVar spt_set_all_sounds_available_after_load(
 ConVar spt_set_game_seed_on_load(
     "spt_set_game_seed_on_load",
     "",
-    FCVAR_TAS_RESET,
+    FCVAR_NONE,
     "Sets the game seed once during the next load.");
 
 RNGStuff spt_rng;
@@ -112,14 +112,13 @@ void RNGStuff::LoadFeature()
 	if (ORIG_CBasePlayer__InitVCollision)
 	{
 		if (ORIG_ivp_srand && spt_rng.IVP_RAND_SEED)
-		{
 			InitConcommandBase(y_spt_set_ivp_seed_on_load);
-			InitConcommandBase(spt_set_game_seed_on_load);
-		}
 		if (g_PhysicsHook__m_impactSoundTime)
 			InitConcommandBase(spt_set_physics_hook_offset_on_load);
 		if (ORIG_CSoundEmitterSystemBase__EnsureAvailableSlotsForGender)
 			InitConcommandBase(spt_set_all_sounds_available_after_load);
+		if (SetRandomSeed)
+			InitConcommandBase(spt_set_game_seed_on_load);
 	}
 }
 
@@ -159,7 +158,10 @@ IMPL_HOOK_THISCALL(RNGStuff,
 			y_spt_set_ivp_seed_on_load.SetValue("");
 		}
 		DevWarning("spt: ivp seed is %u\n", *spt_rng.IVP_RAND_SEED);
+	}
 
+	if (SetRandomSeed)
+	{
 		if (spt_set_game_seed_on_load.GetString()[0] != '\0')
 		{
 			int seed = strtoul(spt_set_game_seed_on_load.GetString(), nullptr, 10);
