@@ -34,6 +34,9 @@ target_compile_options(SPTLib PUBLIC /MP)
 add_library(mathlib STATIC IMPORTED)
 set_target_properties(mathlib PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/SDK/orangebox_new/lib/mathlib.lib")
 
+add_library(vstdlib STATIC IMPORTED)
+set_target_properties(vstdlib PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/SDK/orangebox_new/lib/vstdlib.lib")
+
 add_library(xz STATIC IMPORTED)
 set_target_properties(xz PROPERTIES
 	IMPORTED_LOCATION_DEBUG   "${CMAKE_SOURCE_DIR}/thirdparty/xz/lib/lzma_dbg.lib"
@@ -239,6 +242,7 @@ function(add_engine_branch dllName sdkDir engineBranchDefines)
 		Dbghelp
 		legacy_stdio_definitions
 		mathlib
+		vstdlib
 		Normaliz
 		SPTLib
 		xz

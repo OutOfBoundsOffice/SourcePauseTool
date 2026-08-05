@@ -39,6 +39,8 @@ extern ConVar tas_anglespeed;
 extern ConVar tas_pause;
 extern ConVar tas_log;
 
+extern ConVar spt_use_separate_rng;
+
 // Enables TAS strafing and view related functionality
 class TASFeature : public FeatureWrapper<TASFeature>
 {
