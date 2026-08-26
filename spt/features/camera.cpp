@@ -463,7 +463,8 @@ void Camera::OverrideView(CViewSetup* viewSetup)
 	screenWidth = viewSetup->width;
 	screenHeight = viewSetup->height;
 
-	int controlType = CanOverrideView() ? y_spt_cam_control.GetInt() : 0;
+	bool canOverride = CanOverrideView();
+	int controlType = canOverride ? y_spt_cam_control.GetInt() : 0;
 
 	HandleDriveMode(controlType == 1);
 	HandleCinematicMode(controlType == 2 && spt_demostuff.Demo_IsPlayingBack());
@@ -476,7 +477,7 @@ void Camera::OverrideView(CViewSetup* viewSetup)
 		viewSetup->origin = currentCam.origin;
 		viewSetup->angles = currentCam.angles;
 	}
-	else
+	else if (canOverride)
 	{
 		currentCam = playerCam;
 	}
