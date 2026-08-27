@@ -77,6 +77,7 @@ namespace interfaces
 	IShaderDevice* shaderDevice = nullptr;
 	ISpatialPartition* spatialPartition = nullptr;
 	IServerGameClients* serverGameClients = nullptr;
+	IUniformRandomStream* serverRandomStream = nullptr;
 } // namespace interfaces
 
 ConVar* _viewmodel_fov = nullptr;
@@ -320,6 +321,7 @@ bool CSourcePauseTool::Load(CreateInterfaceFn interfaceFactory, CreateInterfaceF
 	interfaces::engine_vgui = (IEngineVGui*)interfaceFactory(VENGINE_VGUI_VERSION, NULL);
 	interfaces::engine_tool = (IEngineTool*)interfaceFactory(VENGINETOOL_INTERFACE_VERSION, NULL);
 	interfaces::vgui_input = (vgui::IInput*)interfaceFactory(VGUI_INPUT_INTERFACE_VERSION, NULL);
+	interfaces::serverRandomStream = (IUniformRandomStream*)interfaceFactory(VENGINE_SERVER_RANDOM_INTERFACE_VERSION, NULL);
 
 #ifdef OE
 	bool using_mat_system_surface_v4 = false;
