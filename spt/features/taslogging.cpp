@@ -1,5 +1,6 @@
 #include "stdafx.hpp"
 #include "..\feature.hpp"
+#include "playerio.hpp"
 #include "cmodel.h"
 #include "SDK\hl_movedata.h"
 #include "convar.hpp"
@@ -33,7 +34,7 @@ void TASLogging::LoadFeature()
 	if (ProcessMovementPre_Signal.Works && ProcessMovementPost_Signal.Works)
 	{
 		ProcessMovementPre_Signal.Connect(ProcessMovementPre);
-		ProcessMovementPost_Signal.Connect(ProcessMovementPre);
+		ProcessMovementPost_Signal.Connect(ProcessMovementPost);
 		InitConcommandBase(tas_log);
 	}
 }
@@ -41,25 +42,27 @@ void TASLogging::LoadFeature()
 void TASLogging::ProcessMovementPre(void* pPlayer, void* pMove)
 {
 	CHLMoveData* mv = reinterpret_cast<CHLMoveData*>(pMove);
+	Vector v = spt_playerio.m_vecAbsOrigin.GetValue();
 	if (tas_log.GetBool())
 		DevMsg("[ProcessMovement PRE ] origin: %.8f %.8f %.8f; velocity: %.8f %.8f %.8f\n",
-		       mv->GetAbsOrigin().x,
-		       mv->GetAbsOrigin().y,
-		       mv->GetAbsOrigin().z,
-		       mv->m_vecVelocity.x,
-		       mv->m_vecVelocity.y,
-		       mv->m_vecVelocity.z);
+			v.x,
+			v.y,
+			v.z,
+			mv->m_vecVelocity.x,
+			mv->m_vecVelocity.y,
+			mv->m_vecVelocity.z);
 }
 
 void TASLogging::ProcessMovementPost(void* pPlayer, void* pMove)
 {
 	CHLMoveData* mv = reinterpret_cast<CHLMoveData*>(pMove);
+	Vector v = spt_playerio.m_vecAbsOrigin.GetValue();
 	if (tas_log.GetBool())
 		DevMsg("[ProcessMovement POST] origin: %.8f %.8f %.8f; velocity: %.8f %.8f %.8f\n",
-		       mv->GetAbsOrigin().x,
-		       mv->GetAbsOrigin().y,
-		       mv->GetAbsOrigin().z,
-		       mv->m_vecVelocity.x,
-		       mv->m_vecVelocity.y,
-		       mv->m_vecVelocity.z);
+			v.x,
+			v.y,
+			v.z,
+			mv->m_vecVelocity.x,
+			mv->m_vecVelocity.y,
+			mv->m_vecVelocity.z);
 }

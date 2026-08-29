@@ -7,6 +7,7 @@
 #include "dbg.h"
 #include "signals.hpp"
 #include "game_detection.hpp"
+#include "playerio.hpp"
 #include "visualizations\imgui\imgui_interface.hpp"
 #include "tas.hpp"
 
@@ -217,13 +218,14 @@ IMPL_HOOK_THISCALL(AutojumpFeature, bool, CheckJumpButton, void*)
 
 	int* pM_nOldButtons = NULL;
 	int origM_nOldButtons = 0;
+	Vector v = spt_playerio.m_vecAbsOrigin.GetValue();
 
 	CHLMoveData* mv = (CHLMoveData*)(*((uintptr_t*)thisptr + spt_autojump.off_mv_ptr));
 	if (tas_log.GetBool())
 		DevMsg("[CheckJumpButton PRE ] origin: %.8f %.8f %.8f; velocity: %.8f %.8f %.8f\n",
-		       mv->GetAbsOrigin().x,
-		       mv->GetAbsOrigin().y,
-		       mv->GetAbsOrigin().z,
+		       v.x,
+		       v.y,
+		       v.z,
 		       mv->m_vecVelocity.x,
 		       mv->m_vecVelocity.y,
 		       mv->m_vecVelocity.z);
@@ -264,11 +266,13 @@ IMPL_HOOK_THISCALL(AutojumpFeature, bool, CheckJumpButton, void*)
 		}
 	}
 
+	v = spt_playerio.m_vecAbsOrigin.GetValue();
+
 	if (tas_log.GetBool())
 		DevMsg("[CheckJumpButton POST] origin: %.8f %.8f %.8f; velocity: %.8f %.8f %.8f\n",
-		       mv->GetAbsOrigin().x,
-		       mv->GetAbsOrigin().y,
-		       mv->GetAbsOrigin().z,
+		       v.x,
+		       v.y,
+		       v.z,
 		       mv->m_vecVelocity.x,
 		       mv->m_vecVelocity.y,
 		       mv->m_vecVelocity.z);
