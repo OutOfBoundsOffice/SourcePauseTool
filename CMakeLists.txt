@@ -1,14 +1,15 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 
 include(FetchContent)
 
 project(SPT LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
+
+add_subdirectory(thirdparty/lua)
 
 FILE(GLOB_RECURSE SPTLIB_SOURCES
 	SPTLib/Hooks.cpp
@@ -79,6 +80,7 @@ set(SPT_SOURCES
 	spt/features/ipc-spt.cpp
 	spt/features/isg.cpp
 	spt/features/leafvis.cpp
+	spt/features/lua.cpp
 	spt/features/movement_vars.cpp
 	spt/features/overlay.cpp
 	spt/features/pause.cpp
@@ -245,6 +247,7 @@ function(add_engine_branch dllName sdkDir engineBranchDefines)
 		ws2_32
 		${sdk_target}
 		monocle_lib
+		lua
 	)
 endfunction()
 
