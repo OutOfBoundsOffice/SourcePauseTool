@@ -20,6 +20,7 @@
 #include "mathlib/vector.h"
 #endif
 
+#include "utils/game_detection.hpp"
 #include "interface.h"
 #include "imovehelper.h"
 #include "const.h"
@@ -89,7 +90,19 @@ private:
 
 inline const Vector &CMoveData::GetAbsOrigin() const
 {
+#ifdef OE
+	return reinterpret_cast<const Vector&>(m_outStepHeight);
+#elif SSDK2007
+	if (utils::GetBuildNumber() <= 4104) {
+		return reinterpret_cast<const Vector&>(m_outStepHeight);
+	}
+	else {
+		return m_vecAbsOrigin;
+	}
+#else
 	return m_vecAbsOrigin;
+#endif
+
 }
 
 #if !defined( CLIENT_DLL ) && defined( _DEBUG )
