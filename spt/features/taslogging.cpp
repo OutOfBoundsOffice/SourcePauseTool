@@ -33,7 +33,7 @@ void TASLogging::LoadFeature()
 	if (ProcessMovementPre_Signal.Works && ProcessMovementPost_Signal.Works)
 	{
 		ProcessMovementPre_Signal.Connect(ProcessMovementPre);
-		ProcessMovementPost_Signal.Connect(ProcessMovementPre);
+		ProcessMovementPost_Signal.Connect(ProcessMovementPost);
 		InitConcommandBase(tas_log);
 	}
 }
